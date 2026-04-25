@@ -1,0 +1,17 @@
+{
+  "name": "miluchat",
+  "version": "1.0.0",
+  "description": "MILUCHAT en tiempo real",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": "18.x"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "socket.io": "^4.8.3"
+  }
+}
