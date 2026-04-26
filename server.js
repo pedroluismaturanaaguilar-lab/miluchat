@@ -96,6 +96,25 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on('audio message', ({ audioData, room }) => {
+        if (!socket.username) return;
+        const msg = {
+            id: Date.now() + '-' + Math.random().toString(36).substr(2, 6),
+            type: 'audio',
+            username: socket.username,
+            audioData: audioData,
+            timestamp: Date.now(),
+            originalLang: socket.language || 'es'
+        };
+        if (room && room !== 'global') {
+            io.to(room).emit('audio message', msg);
+        } else {
+            globalMessages.push(msg);
+            if (globalMessages.length > 200) globalMessages.shift();
+            io.emit('audio message', msg);
+        }
+    });
+
     socket.on('media message', ({ mediaType, content }) => {
         if (!socket.username) return;
         const postId = Date.now() + '-' + Math.random().toString(36).substr(2, 6);
@@ -180,8 +199,6 @@ io.on('connection', (socket) => {
                 io.to(socket.id).emit('coins update', caller.coins);
                 broadcastUserList();
                 io.to(targetId).emit('call-offer', { offer, from: socket.username, durationMinutes });
-            } else {
-                socket.emit('call-reject', { from: targetUser });
             }
         }
     });
@@ -341,25 +358,6 @@ io.on('connection', (socket) => {
             broadcastUserList();
         }
     });
-    // Después de los otros eventos, agregar:
-socket.on('audio message', ({ audioData, room }) => {
-    if (!socket.username) return;
-    const msg = {
-        id: Date.now() + '-' + Math.random().toString(36).substr(2, 6),
-        type: 'audio',
-        username: socket.username,
-        audioData: audioData,
-        timestamp: Date.now(),
-        originalLang: socket.language || 'es'
-    };
-    if (room && room !== 'global') {
-        io.to(room).emit('audio message', msg);
-    } else {
-        globalMessages.push(msg);
-        if (globalMessages.length > 200) globalMessages.shift();
-        io.emit('audio message', msg);
-    }
-});
 });
 
 const PORT = process.env.PORT || 3000;
