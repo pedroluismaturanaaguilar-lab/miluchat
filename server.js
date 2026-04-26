@@ -5,9 +5,12 @@ const { Server } = require('socket.io');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+    cors: { origin: "*" }
+});
 
 app.use(express.static(path.join(__dirname)));
+app.use(express.json({ limit: '50mb' }));
 
 // Filtro de palabras ofensivas
 const badWords = ['puto', 'puta', 'mierda', 'coño', 'joder', 'gilipollas', 'idiota', 'estúpido'];
@@ -20,9 +23,9 @@ const filterMessage = (text) => {
     return filtered;
 };
 
-const users = new Map(); // socketId -> { username, coins, language, country }
-const userSockets = new Map(); // username -> socketId
-const userData = new Map(); // username -> { language, country, blocked }
+const users = new Map();
+const userSockets = new Map();
+const userData = new Map();
 const privateRooms = new Map();
 let globalMessages = [];
 let mediaPosts = [];
@@ -30,7 +33,6 @@ const userVisits = new Map();
 let pendingCoinRequests = [];
 
 const ADMIN_PASSWORD = '2016';
-const ADMIN_USERNAME = 'admin';
 
 setInterval(() => {
     const now = Date.now();
@@ -74,7 +76,6 @@ io.on('connection', (socket) => {
         io.emit('user list', list);
     }
 
-    // Mensaje de texto (global o privado)
     socket.on('chat message', ({ text, room }) => {
         if (!socket.username) return;
         const filtered = filterMessage(text);
@@ -95,7 +96,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    // Subir multimedia
     socket.on('media message', ({ mediaType, content }) => {
         if (!socket.username) return;
         const postId = Date.now() + '-' + Math.random().toString(36).substr(2, 6);
@@ -121,7 +121,6 @@ io.on('connection', (socket) => {
         });
     });
 
-    // Like
     socket.on('like content', ({ contentId }) => {
         const post = mediaPosts.find(p => p.id === contentId);
         if (!post || post.likedBy.includes(socket.username)) return;
@@ -143,7 +142,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    // Eliminar post
     socket.on('delete media', ({ postId }) => {
         const index = mediaPosts.findIndex(p => p.id === postId && p.username === socket.username);
         if (index !== -1) {
@@ -152,7 +150,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    // Eliminar mensaje propio
     socket.on('delete message', ({ messageId }) => {
         const index = globalMessages.findIndex(m => m.id === messageId && m.username === socket.username);
         if (index !== -1) {
@@ -161,7 +158,60 @@ io.on('connection', (socket) => {
         }
     });
 
-    // ADMIN: login
+    // Videollamada WebRTC
+    socket.on('check call cost', ({ durationMinutes }, callback) => {
+        const user = users.get(socket.id);
+        const cost = Math.ceil(durationMinutes / 2) * 1.5;
+        if(user) {
+            callback({ canAfford: user.coins >= cost, cost });
+        } else {
+            callback({ canAfford: false, cost });
+        }
+    });
+
+    socket.on('call-offer', ({ offer, targetUser, durationMinutes }) => {
+        const targetId = userSockets.get(targetUser);
+        if (targetId) {
+            const caller = users.get(socket.id);
+            const cost = Math.ceil(durationMinutes / 2) * 1.5;
+            if (caller && caller.coins >= cost) {
+                caller.coins -= cost;
+                users.set(socket.id, caller);
+                io.to(socket.id).emit('coins update', caller.coins);
+                broadcastUserList();
+                io.to(targetId).emit('call-offer', { offer, from: socket.username, durationMinutes });
+            } else {
+                socket.emit('call-reject', { from: targetUser });
+            }
+        }
+    });
+
+    socket.on('call-answer', ({ answer, to }) => {
+        const toId = userSockets.get(to);
+        if (toId) {
+            io.to(toId).emit('call-answer', { answer });
+        }
+    });
+
+    socket.on('ice-candidate', ({ candidate, targetUser }) => {
+        const targetId = userSockets.get(targetUser);
+        if (targetId) {
+            io.to(targetId).emit('ice-candidate', { candidate });
+        }
+    });
+
+    socket.on('call-reject', ({ from }) => {
+        const fromId = userSockets.get(from);
+        if (fromId) {
+            io.to(fromId).emit('call-reject', { from: socket.username });
+        }
+    });
+
+    socket.on('end-call', () => {
+        socket.broadcast.emit('call-ended');
+    });
+
+    // Admin
     socket.on('admin login', (password, callback) => {
         if (password === ADMIN_PASSWORD) {
             socket.isAdmin = true;
@@ -172,7 +222,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    // ADMIN: dar monedas por nombre
     socket.on('admin give coins', ({ targetUsername, amount }, callback) => {
         if (!socket.isAdmin) {
             callback({ success: false, error: 'No autorizado' });
@@ -191,7 +240,6 @@ io.on('connection', (socket) => {
         callback({ success: true });
     });
 
-    // ADMIN: bloquear/desbloquear
     socket.on('admin toggle block', ({ targetUsername, block }, callback) => {
         if (!socket.isAdmin) {
             callback({ success: false, error: 'No autorizado' });
@@ -208,7 +256,8 @@ io.on('connection', (socket) => {
             const targetId = userSockets.get(targetUsername);
             if (targetId) {
                 io.to(targetId).emit('force logout', 'Has sido bloqueado');
-                io.sockets.sockets.get(targetId)?.disconnect(true);
+                const targetSocket = io.sockets.sockets.get(targetId);
+                if(targetSocket) targetSocket.disconnect(true);
                 userSockets.delete(targetUsername);
             }
         }
@@ -216,7 +265,6 @@ io.on('connection', (socket) => {
         broadcastUserList();
     });
 
-    // ADMIN: resolver solicitud de monedas
     socket.on('admin resolve request', ({ requestIndex, giveCoins }) => {
         if (!socket.isAdmin) return;
         const req = pendingCoinRequests[requestIndex];
@@ -233,58 +281,13 @@ io.on('connection', (socket) => {
             }
         }
         pendingCoinRequests.splice(requestIndex, 1);
-        if (socket.isAdmin) {
-            socket.emit('admin pending requests', pendingCoinRequests);
-        }
-        for (let [id, sock] of io.sockets.sockets) {
-            if (sock.isAdmin) sock.emit('admin pending requests', pendingCoinRequests);
-        }
+        io.emit('admin pending requests', pendingCoinRequests);
     });
 
-    // Solicitud de monedas (usuario -> admin)
     socket.on('request coins', ({ amount, message }) => {
         if (!socket.username) return;
         pendingCoinRequests.push({ from: socket.username, amount, message, timestamp: Date.now() });
-        const adminId = userSockets.get(ADMIN_USERNAME);
-        if (adminId) {
-            io.to(adminId).emit('new coin request', pendingCoinRequests[pendingCoinRequests.length - 1]);
-        }
-    });
-
-    // Videollamada
-    socket.on('start call', ({ targetUsername, durationMinutes }, callback) => {
-        const caller = users.get(socket.id);
-        const targetId = userSockets.get(targetUsername);
-        if (!targetId) {
-            callback({ success: false, error: 'Usuario no conectado' });
-            return;
-        }
-        const cost = Math.ceil(durationMinutes / 2) * 1.5;
-        if (caller.coins < cost) {
-            callback({ success: false, error: `Necesitas ${cost} monedas` });
-            return;
-        }
-        caller.coins -= cost;
-        users.set(socket.id, caller);
-        io.to(socket.id).emit('coins update', caller.coins);
-        io.to(targetId).emit('incoming call', { from: socket.username, durationMinutes, cost });
-        callback({ success: true, message: `Llamada iniciada (${cost} monedas)` });
-        broadcastUserList();
-    });
-
-    socket.on('accept call', ({ fromUsername }) => {
-        const fromId = userSockets.get(fromUsername);
-        if (fromId) {
-            io.to(fromId).emit('call accepted', { message: `${socket.username} aceptó la llamada` });
-            io.to(socket.id).emit('call started', { withUser: fromUsername });
-        }
-    });
-
-    socket.on('reject call', ({ fromUsername }) => {
-        const fromId = userSockets.get(fromUsername);
-        if (fromId) {
-            io.to(fromId).emit('call rejected', { message: `${socket.username} rechazó la llamada` });
-        }
+        io.emit('new coin request', pendingCoinRequests[pendingCoinRequests.length - 1]);
     });
 
     // Chat privado
@@ -313,7 +316,6 @@ io.on('connection', (socket) => {
     socket.on('leave private chat', ({ roomName }) => {
         if (roomName && socket.rooms.has(roomName)) {
             socket.leave(roomName);
-            socket.emit('private chat closed', { roomName });
             setTimeout(() => {
                 const roomSockets = io.sockets.adapter.rooms.get(roomName);
                 if (!roomSockets || roomSockets.size === 0) privateRooms.delete(roomName);
@@ -342,4 +344,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`Servidor en http://localhost:${PORT}`));
+server.listen(PORT, () => console.log(`🚀 Servidor en http://localhost:${PORT}`));
