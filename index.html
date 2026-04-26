@@ -51,9 +51,9 @@
         .left-panel { background: #1a1e24; border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
         .my-info { padding: 16px; text-align: center; border-bottom: 1px solid var(--border); }
         .my-coins { font-size: 1.4rem; color: gold; margin: 8px 0; }
-        .btn-sm { background: var(--warning); border: none; padding: 8px; border-radius: 40px; color: white; cursor: pointer; width: 100%; margin-top: 6px; font-size: 14px; transition: opacity 0.2s; }
+        .btn-sm { background: var(--warning); border: none; padding: 8px; border-radius: 40px; color: white; cursor: pointer; width: 100%; margin-top: 6px; font-size: 14px; }
         .online-users { padding: 12px; }
-        .user-online { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 40px; background: var(--bg-chat); margin: 6px 0; cursor: pointer; transition: background 0.2s; }
+        .user-online { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 40px; background: var(--bg-chat); margin: 6px 0; cursor: pointer; }
         .status-dot { width: 10px; height: 10px; background: #22c55e; border-radius: 50%; display: inline-block; }
         
         .center-area { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); overflow: hidden; }
@@ -62,11 +62,11 @@
         .messages-container { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
         
         .emoji-row { display: flex; gap: 6px; padding: 6px 12px; background: var(--bg-sidebar); overflow-x: auto; }
-        .emoji-item { font-size: 1.2rem; cursor: pointer; padding: 4px; transition: transform 0.1s; }
+        .emoji-item { font-size: 1.2rem; cursor: pointer; padding: 4px; }
         
         .input-fixed { padding: 8px 12px; background: var(--bg-sidebar); display: flex; gap: 8px; border-top: 1px solid var(--border); flex-wrap: wrap; }
         .input-fixed textarea { flex: 1; border: none; border-radius: 20px; padding: 10px; background: var(--bg-chat); color: var(--text-primary); resize: none; font-size: 16px; min-width: 120px; }
-        .input-fixed button { background: var(--accent); border: none; padding: 10px 16px; border-radius: 20px; color: white; cursor: pointer; font-weight: bold; transition: background 0.2s; }
+        .input-fixed button { background: var(--accent); border: none; padding: 10px 16px; border-radius: 20px; color: white; cursor: pointer; font-weight: bold; }
         .audio-btn { background: #8b5cf6 !important; }
         .audio-btn.recording { background: #ef4444 !important; animation: pulse 1s infinite; }
         
@@ -89,7 +89,6 @@
         .system-message { text-align: center; font-size: 0.7rem; background: #2a2f38; padding: 4px; border-radius: 20px; width: fit-content; margin: 4px auto; color: #8a98a9; }
         .audio-message { display: flex; align-items: center; gap: 10px; }
         .audio-play-btn { background: var(--accent); border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; font-size: 16px; }
-        .audio-duration { font-size: 12px; color: #8a98a9; }
         
         .floating-chat { position: fixed; bottom: 20px; right: 20px; width: 340px; height: 480px; background: var(--bg-sidebar); border-radius: 16px; display: flex; flex-direction: column; z-index: 1000; border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .floating-header { background: var(--accent); padding: 10px; border-radius: 16px 16px 0 0; display: flex; justify-content: space-between; cursor: move; color: white; }
@@ -230,6 +229,36 @@
         }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .incoming-call-notification {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            background: var(--bg-sidebar);
+            border-left: 4px solid var(--accent);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 1500;
+            min-width: 250px;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .incoming-call-notification button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            margin-right: 8px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .accept-call { background: var(--success); color: white; }
+        .reject-call { background: var(--danger); color: white; }
     </style>
 </head>
 <body>
@@ -359,9 +388,10 @@
     let mediaPosts = [];
     let userCountry = 'COL';
     let isAdmin = false;
-    let activeCall = null;
     let peerConnection = null;
     let localStream = null;
+    let currentCall = null;
+    let callEnded = false;
     const translationCache = new Map();
     
     // Audio recording
@@ -404,26 +434,6 @@
         const cacheKey = text + '|' + sourceLang + '|' + targetLang;
         if (translationCache.has(cacheKey)) return translationCache.get(cacheKey);
         try {
-            // Si es inglés, usar traducción mejorada
-            if(targetLang === 'en') {
-                const translations_map = {
-                    'hola': 'hello', 'como estas': 'how are you', 'bien': 'good', 'gracias': 'thanks',
-                    'adios': 'goodbye', 'que tal': 'what\'s up', 'buenos dias': 'good morning',
-                    'buenas tardes': 'good afternoon', 'buenas noches': 'good night', 'por favor': 'please',
-                    'si': 'yes', 'no': 'no', 'amigo': 'friend', 'amiga': 'friend', 'feliz': 'happy',
-                    'triste': 'sad', 'enojado': 'angry', 'amor': 'love', 'te quiero': 'i love you'
-                };
-                let result = text.toLowerCase();
-                for(let [key, value] of Object.entries(translations_map)) {
-                    if(result.includes(key)) {
-                        result = result.replace(new RegExp(key, 'g'), value);
-                    }
-                }
-                if(result !== text.toLowerCase()) {
-                    translationCache.set(cacheKey, result);
-                    return result;
-                }
-            }
             const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`;
             const res = await fetch(url);
             const data = await res.json();
@@ -432,7 +442,6 @@
             translationCache.set(cacheKey, translated);
             return translated;
         } catch(e) { 
-            console.error('Error traduciendo:', e);
             return text; 
         }
     }
@@ -480,7 +489,6 @@
                 reader.onloadend = () => {
                     const audioData = reader.result;
                     socket.emit('audio message', { audioData, room: currentRoom });
-                    addSystemMessage('🎤 Audio enviado');
                 };
                 reader.readAsDataURL(audioBlob);
                 stream.getTracks().forEach(track => track.stop());
@@ -496,7 +504,7 @@
             
             setTimeout(() => {
                 if(isRecording) stopAudioRecording();
-            }, 30000); // Máximo 30 segundos
+            }, 30000);
         } catch(err) {
             console.error('Error al grabar audio:', err);
             alert('No se pudo acceder al micrófono');
@@ -515,7 +523,6 @@
         }
     }
     
-    // Función para reproducir audio en mensaje
     function addAudioMessageToDOM(data, isOwn) {
         const div = document.createElement('div');
         div.className = `message ${isOwn ? 'own' : ''}`;
@@ -566,7 +573,6 @@
     const mediaFileInput = document.getElementById('mediaFileInput');
     const mediaWall = document.getElementById('mediaWall');
     
-    // Audio button event
     if(audioMsgBtn) {
         audioMsgBtn.onclick = () => {
             if(isRecording) {
@@ -635,7 +641,8 @@
         if (delBtn) delBtn.onclick = () => { if(confirm('¿Eliminar mensaje?')) socket.emit('delete message', { messageId: data.id }); };
     }
     
-    function addSystemMessage(text) {
+    function addSystemMessage(text, showInChat = true) {
+        if(!showInChat) return;
         const div = document.createElement('div');
         div.className = 'system-message';
         div.innerText = text;
@@ -643,7 +650,6 @@
             messagesContainer.appendChild(div);
             if (autoScroll) messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
-        playSound();
     }
     
     function renderMediaWall() {
@@ -701,16 +707,24 @@
         });
     }
     
-    // WebRTC Videollamada mejorada
+    // WebRTC Videollamada CORREGIDA
     const configuration = { 
         iceServers: [
             { urls: 'stun:stun.l.google.com:19302' },
-            { urls: 'stun:stun1.l.google.com:19302' },
-            { urls: 'stun:stun2.l.google.com:19302' }
+            { urls: 'stun:stun1.l.google.com:19302' }
         ] 
     };
     
+    let callTimerInterval = null;
+    let callStartTime = null;
+    let isInCall = false;
+    
     async function startCall(targetUser, durationMinutes) {
+        if(isInCall) {
+            alert('Ya estás en una llamada');
+            return;
+        }
+        
         socket.emit('check call cost', { durationMinutes }, async (res) => {
             if (!res || !res.canAfford) {
                 alert(`Necesitas ${res?.cost || 1.5} monedas para llamar ${durationMinutes} minutos`);
@@ -719,7 +733,8 @@
             
             try {
                 localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                showCallUI(durationMinutes, true, targetUser);
+                isInCall = true;
+                callEnded = false;
                 
                 peerConnection = new RTCPeerConnection(configuration);
                 
@@ -728,24 +743,21 @@
                 });
                 
                 peerConnection.onicecandidate = (event) => {
-                    if (event.candidate) {
+                    if (event.candidate && !callEnded) {
                         socket.emit('ice-candidate', { candidate: event.candidate, targetUser });
                     }
                 };
                 
                 peerConnection.ontrack = (event) => {
                     const remoteVideo = document.getElementById('remoteVideo');
-                    if (remoteVideo && event.streams[0]) {
+                    if (remoteVideo && event.streams[0] && !callEnded) {
                         remoteVideo.srcObject = event.streams[0];
                     }
                 };
                 
                 peerConnection.onconnectionstatechange = () => {
-                    if (peerConnection.connectionState === 'connected') {
-                        addSystemMessage('📹 Conexión de videollamada establecida');
-                    } else if (peerConnection.connectionState === 'failed') {
-                        addSystemMessage('❌ Falló la conexión de videollamada');
-                        endCall();
+                    if (peerConnection.connectionState === 'failed' && !callEnded) {
+                        endCall(true);
                     }
                 };
                 
@@ -754,9 +766,12 @@
                 
                 socket.emit('call-offer', { offer, targetUser, durationMinutes });
                 
+                showCallUI(durationMinutes, true, targetUser);
+                
             } catch (err) {
                 console.error('Error al iniciar llamada:', err);
-                alert('No se pudo acceder a cámara/micrófono. Por favor permite los permisos.');
+                alert('No se pudo acceder a cámara/micrófono');
+                isInCall = false;
             }
         });
     }
@@ -782,7 +797,7 @@
                 <div class="call-controls">
                     <button id="endCallBtn" class="end-call-btn">📞 Colgar</button>
                 </div>
-                <div class="timer" id="timerLabel">Duración: 0:00 / ${durationMinutes}:00</div>
+                <div class="timer" id="timerLabel">Conectando...</div>
             </div>
         `;
         document.body.appendChild(overlay);
@@ -792,103 +807,147 @@
             if (localVideo) localVideo.srcObject = localStream;
         }
         
-        let timeLeft = durationMinutes * 60;
-        const timerInterval = setInterval(() => {
-            if (timeLeft <= 0) {
-                clearInterval(timerInterval);
-                if (activeCall) endCall();
-            } else {
-                timeLeft--;
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                const timerSpan = document.getElementById('timerLabel');
-                if (timerSpan) timerSpan.innerText = `Duración: ${minutes}:${seconds.toString().padStart(2,'0')} / ${durationMinutes}:00`;
+        let timeElapsed = 0;
+        if(callTimerInterval) clearInterval(callTimerInterval);
+        
+        callTimerInterval = setInterval(() => {
+            if (!isInCall || callEnded) {
+                clearInterval(callTimerInterval);
+                return;
+            }
+            timeElapsed++;
+            const minutes = Math.floor(timeElapsed / 60);
+            const seconds = timeElapsed % 60;
+            const timerSpan = document.getElementById('timerLabel');
+            if (timerSpan && durationMinutes) {
+                timerSpan.innerText = `Duración: ${minutes}:${seconds.toString().padStart(2,'0')} / ${durationMinutes}:00`;
+                if (timeElapsed >= durationMinutes * 60) {
+                    endCall(true);
+                }
+            } else if(timerSpan) {
+                timerSpan.innerText = `Duración: ${minutes}:${seconds.toString().padStart(2,'0')}`;
             }
         }, 1000);
         
         const endBtn = document.getElementById('endCallBtn');
         if(endBtn) {
-            endBtn.onclick = () => {
-                clearInterval(timerInterval);
-                endCall();
-            };
+            endBtn.onclick = () => endCall(true);
         }
-        
-        activeCall = { timerInterval, otherUser };
     }
     
-    function endCall() {
-        if (activeCall?.timerInterval) clearInterval(activeCall.timerInterval);
-        if (peerConnection) {
+    function endCall(showMessage = false) {
+        if(callEnded) return;
+        callEnded = true;
+        isInCall = false;
+        
+        if(callTimerInterval) {
+            clearInterval(callTimerInterval);
+            callTimerInterval = null;
+        }
+        
+        if(peerConnection) {
             peerConnection.close();
             peerConnection = null;
         }
-        if (localStream) {
+        
+        if(localStream) {
             localStream.getTracks().forEach(track => track.stop());
             localStream = null;
         }
+        
         const overlay = document.querySelector('.call-overlay');
         if (overlay) overlay.remove();
-        socket.emit('end-call');
-        addSystemMessage('📹 Videollamada finalizada');
-        activeCall = null;
+        
+        if(showMessage) {
+            socket.emit('end-call');
+        }
+    }
+    
+    // Mostrar notificación de llamada entrante
+    function showIncomingCallNotification(from, durationMinutes, acceptCallback, rejectCallback) {
+        const notification = document.createElement('div');
+        notification.className = 'incoming-call-notification';
+        notification.innerHTML = `
+            <strong>📹 Llamada entrante</strong><br>
+            ${from} te llama por ${durationMinutes} minutos
+            <div>
+                <button class="accept-call">✅ Aceptar</button>
+                <button class="reject-call">❌ Rechazar</button>
+            </div>
+        `;
+        document.body.appendChild(notification);
+        
+        notification.querySelector('.accept-call').onclick = () => {
+            notification.remove();
+            acceptCallback();
+        };
+        
+        notification.querySelector('.reject-call').onclick = () => {
+            notification.remove();
+            rejectCallback();
+        };
+        
+        setTimeout(() => {
+            if(notification.parentNode) notification.remove();
+        }, 30000);
     }
     
     // Socket eventos para videollamada
     socket.on('call-offer', async ({ offer, from, durationMinutes }) => {
-        const accept = confirm(`${from} te llama por ${durationMinutes} minutos. ¿Aceptar?`);
-        if (!accept) {
+        if(isInCall) {
             socket.emit('call-reject', { from });
             return;
         }
         
-        try {
-            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            showCallUI(durationMinutes, false, from);
-            
-            peerConnection = new RTCPeerConnection(configuration);
-            localStream.getTracks().forEach(track => {
-                peerConnection.addTrack(track, localStream);
-            });
-            
-            peerConnection.onicecandidate = (event) => {
-                if (event.candidate) {
-                    socket.emit('ice-candidate', { candidate: event.candidate, targetUser: from });
-                }
-            };
-            
-            peerConnection.ontrack = (event) => {
-                const remoteVideo = document.getElementById('remoteVideo');
-                if (remoteVideo && event.streams[0]) {
-                    remoteVideo.srcObject = event.streams[0];
-                }
-            };
-            
-            peerConnection.onconnectionstatechange = () => {
-                if (peerConnection.connectionState === 'connected') {
-                    addSystemMessage('📹 Conexión de videollamada establecida');
-                }
-            };
-            
-            await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-            const answer = await peerConnection.createAnswer();
-            await peerConnection.setLocalDescription(answer);
-            socket.emit('call-answer', { answer, to: from });
-            
-        } catch (err) {
-            console.error('Error al aceptar llamada:', err);
-            alert('No se pudo acceder a cámara/micrófono');
-        }
+        showIncomingCallNotification(from, durationMinutes, async () => {
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                isInCall = true;
+                callEnded = false;
+                
+                peerConnection = new RTCPeerConnection(configuration);
+                localStream.getTracks().forEach(track => {
+                    peerConnection.addTrack(track, localStream);
+                });
+                
+                peerConnection.onicecandidate = (event) => {
+                    if (event.candidate && !callEnded) {
+                        socket.emit('ice-candidate', { candidate: event.candidate, targetUser: from });
+                    }
+                };
+                
+                peerConnection.ontrack = (event) => {
+                    const remoteVideo = document.getElementById('remoteVideo');
+                    if (remoteVideo && event.streams[0] && !callEnded) {
+                        remoteVideo.srcObject = event.streams[0];
+                    }
+                };
+                
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+                const answer = await peerConnection.createAnswer();
+                await peerConnection.setLocalDescription(answer);
+                socket.emit('call-answer', { answer, to: from });
+                
+                showCallUI(durationMinutes, false, from);
+                
+            } catch (err) {
+                console.error('Error al aceptar llamada:', err);
+                alert('No se pudo acceder a cámara/micrófono');
+                isInCall = false;
+            }
+        }, () => {
+            socket.emit('call-reject', { from });
+        });
     });
     
     socket.on('call-answer', async ({ answer }) => {
-        if (peerConnection) {
+        if (peerConnection && !callEnded) {
             await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
         }
     });
     
     socket.on('ice-candidate', async ({ candidate }) => {
-        if (peerConnection) {
+        if (peerConnection && !callEnded) {
             try {
                 await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
             } catch (err) {
@@ -898,16 +957,19 @@
     });
     
     socket.on('call-reject', ({ from }) => {
-        alert(`${from} rechazó la llamada`);
-        endCall();
+        if(!callEnded) {
+            addSystemMessage(`📹 ${from} rechazó la llamada`, true);
+            endCall(false);
+        }
     });
     
     socket.on('call-ended', () => {
-        addSystemMessage('📹 La videollamada ha terminado');
-        endCall();
+        if(!callEnded) {
+            addSystemMessage(`📹 La videollamada ha terminado`, false);
+            endCall(false);
+        }
     });
     
-    // Audio message event
     socket.on('audio message', (data) => {
         if (currentRoom === 'global') {
             addAudioMessageToDOM(data, data.username === currentUsername);
@@ -966,7 +1028,7 @@
                         if(privateMediaRecorder) privateMediaRecorder.stop();
                         privateIsRecording = false;
                         audioPrivateBtn.textContent = '🎤';
-                        audioPrivateBtn.style.background = 'var(--accent)';
+                        audioPrivateBtn.style.background = '';
                     } else {
                         try {
                             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -983,7 +1045,6 @@
                                 reader.onloadend = () => {
                                     const audioData = reader.result;
                                     socket.emit('audio message', { audioData, room: roomName });
-                                    addSystemMessage('🎤 Audio enviado al chat privado');
                                 };
                                 reader.readAsDataURL(audioBlob);
                                 stream.getTracks().forEach(track => track.stop());
@@ -999,7 +1060,7 @@
                                     privateMediaRecorder.stop();
                                     privateIsRecording = false;
                                     audioPrivateBtn.textContent = '🎤';
-                                    audioPrivateBtn.style.background = 'var(--accent)';
+                                    audioPrivateBtn.style.background = '';
                                 }
                             }, 30000);
                         } catch(err) {
@@ -1044,6 +1105,7 @@
                     floatingDiv.remove();
                     floatingWindows.delete(targetUser);
                     if (floatingDiv.privateHandler) socket.off('private message', floatingDiv.privateHandler);
+                    if (floatingDiv.audioHandler) socket.off('audio message', floatingDiv.audioHandler);
                 };
             }
             if(callPrivateBtn) {
@@ -1083,7 +1145,6 @@
                         messagesFloat.scrollTop = messagesFloat.scrollHeight;
                     }
                     playSound();
-                    if (document.hidden) showNotification(data.username, displayText);
                 }
             };
             
@@ -1141,7 +1202,7 @@
         else if(m.audioData) addAudioMessageToDOM(m, m.username === currentUsername);
     }));
     socket.on('chat message', (data) => { if (currentRoom === 'global') addMessageToDOM(data, data.username === currentUsername); });
-    socket.on('system message', (data) => addSystemMessage(data.text));
+    socket.on('system message', (data) => addSystemMessage(data.text, true));
     socket.on('user list', updateUsersList);
     socket.on('media posts update', (posts) => { mediaPosts = posts; renderMediaWall(); });
     socket.on('message deleted', (id) => { 
@@ -1198,7 +1259,7 @@
                 if (newLang && translations[newLang]) {
                     userLanguage = newLang;
                     applyUILanguage(newLang);
-                    addSystemMessage(`Idioma cambiado a ${newLang}. Los mensajes se traducirán automáticamente.`);
+                    addSystemMessage(`Idioma cambiado a ${newLang}. Los mensajes se traducirán automáticamente.`, true);
                     if(messagesContainer) messagesContainer.innerHTML = '';
                     socket.emit('global history', (msgs) => msgs.forEach(m => addMessageToDOM(m, m.username === currentUsername)));
                 } else if(newLang) {
@@ -1220,7 +1281,7 @@
     logoutBtns.forEach(btn => {
         if(btn) {
             btn.onclick = () => { 
-                if(peerConnection) endCall();
+                if(isInCall) endCall(true);
                 if(isRecording) stopAudioRecording();
                 socket.emit('logout'); 
                 localStorage.clear(); 
@@ -1231,6 +1292,10 @@
     
     if(callGlobalBtn) {
         callGlobalBtn.onclick = () => {
+            if(isInCall) {
+                alert('Ya estás en una llamada');
+                return;
+            }
             const target = prompt('¿A quién llamar? (nombre de usuario)');
             if (!target) return;
             const mins = prompt('Duración en minutos (2,4,6...)', '2');
@@ -1385,7 +1450,7 @@
                                 });
                             });
                             
-                            addSystemMessage('🔐 Modo administrador activado');
+                            addSystemMessage('🔐 Modo administrador activado', true);
                         } else {
                             alert('❌ Contraseña incorrecta');
                         }
@@ -1408,7 +1473,7 @@
                 if(chatDiv) chatDiv.style.display = 'flex';
                 updateCoins(data.coins);
                 updateMyName(username);
-                addSystemMessage(`✨ Bienvenido ${username}. Tienes ${data.coins} monedas.`);
+                addSystemMessage(`✨ Bienvenido ${username}. Tienes ${data.coins} monedas.`, true);
             } else if(errorMsg) {
                 errorMsg.innerText = data;
             }
