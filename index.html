@@ -286,9 +286,13 @@
         </div>
     </div>
     <div class="mobile-menu" id="mobileRightMenu" style="left: auto; right: -280px;">
-        <button id="logoutBtn" style="background:#ef4444; padding:12px; border-radius:12px; border:none; color:white; width:90%; margin:12px;">🚪 Cerrar sesión</button>
-        <button id="adminLoginBtn" style="background:#8b5cf6; padding:12px; border-radius:12px; border:none; color:white; width:90%; margin:12px;">🔐 Admin</button>
-        <div id="adminPanel" style="display:none; padding:12px;"></div>
+        <div class="my-info">
+            <h3 id="myNameMobile">-</h3>
+            <div class="my-coins">💰 <span id="myCoinsMobile">0</span></div>
+        </div>
+        <button id="logoutBtnMobile" style="background:#ef4444; padding:12px; border-radius:12px; border:none; color:white; width:90%; margin:12px;">🚪 Cerrar sesión</button>
+        <button id="adminLoginBtnMobile" style="background:#8b5cf6; padding:12px; border-radius:12px; border:none; color:white; width:90%; margin:12px;">🔐 Admin</button>
+        <div id="adminPanelMobile" style="display:none; padding:12px;"></div>
     </div>
     <div class="app-grid">
         <div class="left-panel">
@@ -324,6 +328,10 @@
             </div>
         </div>
         <div class="right-panel">
+            <div class="my-info" style="padding:12px;">
+                <h3 id="myNamePC">-</h3>
+                <div class="my-coins">💰 <span id="myCoinsPC">0</span></div>
+            </div>
             <button id="logoutBtn2" style="background:#ef4444; padding:8px; border-radius:12px; border:none; color:white;">🚪 Cerrar sesión</button>
             <button id="adminLoginBtn2" style="background:#8b5cf6;">🔐 Admin</button>
             <div id="adminPanel2" style="display:none;"></div>
@@ -332,7 +340,7 @@
 </div>
 
 <script>
-    // Traducciones completas para todos los idiomas soportados
+    // Traducciones completas
     const translations = {
         es: { welcomeTitle:"MILUCHAT", acceptTerms:"Acepto los términos", joinBtn:"Ingresar", requestCoins:"➕ Pedir monedas", changeLang:"🌐 Cambiar idioma", onlineUsers:"📡 En línea", globalChat:"💬 Chat Global", send:"Enviar", call:"📹", wall:"📸 Muro (sube fotos/videos)", upload:"📤 Subir", logout:"🚪 Cerrar sesión", admin:"🔐 Admin", terms:"📜 Términos y condiciones\n1. Aceptas las reglas de convivencia.\n2. El contenido subido expira en 12h.\n3. Las monedas se ganan con likes.\n4. Las videollamadas consumen monedas.", usernamePlaceholder:"Nombre de usuario" },
         en: { welcomeTitle:"MILUCHAT", acceptTerms:"I accept the terms", joinBtn:"Login", requestCoins:"➕ Request coins", changeLang:"🌐 Change language", onlineUsers:"📡 Online", globalChat:"💬 Global Chat", send:"Send", call:"📹", wall:"📸 Wall (upload photos/videos)", upload:"📤 Upload", logout:"🚪 Logout", admin:"🔐 Admin", terms:"📜 Terms and conditions\n1. You accept coexistence rules.\n2. Uploaded content expires in 12h.\n3. Coins are earned with likes.\n4. Video calls consume coins.", usernamePlaceholder:"Username" },
@@ -361,36 +369,32 @@
     
     function applyUILanguage(lang) {
         const t = translations[lang] || translations.es;
-        const welcomeTitle = document.getElementById('welcomeTitle');
-        const acceptTermsLabel = document.getElementById('acceptTermsLabel');
-        const joinBtnEl = document.getElementById('joinBtn');
-        const requestBtns = document.querySelectorAll('#requestCoinsBtn, #requestCoinsBtn2');
-        const langBtns = document.querySelectorAll('#changeLangBtn, #changeLangBtn2');
-        const onlineTitles = document.querySelectorAll('.online-users h4');
-        const chatHeaders = document.querySelectorAll('.chat-header');
-        const sendBtns = document.querySelectorAll('#sendBtn');
-        const callBtn = document.getElementById('callGlobalBtn');
-        const uploadBtns = document.querySelectorAll('#uploadMediaBtn');
-        const logoutBtnsUI = document.querySelectorAll('#logoutBtn, #logoutBtn2');
-        const adminBtnsUI = document.querySelectorAll('#adminLoginBtn, #adminLoginBtn2');
-        const usernamePlaceholder = document.getElementById('usernameInput');
-        const termsBox = document.getElementById('termsBox');
+        const elements = {
+            welcomeTitle: document.getElementById('welcomeTitle'),
+            acceptTermsLabel: document.getElementById('acceptTermsLabel'),
+            joinBtn: document.getElementById('joinBtn'),
+            sendBtn: document.getElementById('sendBtn'),
+            callGlobalBtn: document.getElementById('callGlobalBtn'),
+            uploadMediaBtn: document.getElementById('uploadMediaBtn'),
+            usernameInput: document.getElementById('usernameInput'),
+            termsBox: document.getElementById('termsBox')
+        };
         
-        if(welcomeTitle) welcomeTitle.innerText = t.welcomeTitle;
-        if(acceptTermsLabel) acceptTermsLabel.innerText = t.acceptTerms;
-        if(joinBtnEl) joinBtnEl.innerText = t.joinBtn;
-        requestBtns.forEach(btn => { if(btn) btn.innerText = t.requestCoins; });
-        langBtns.forEach(btn => { if(btn) btn.innerText = t.changeLang; });
-        onlineTitles.forEach(el => { if(el) el.innerText = t.onlineUsers; });
-        if(chatHeaders[0]) chatHeaders[0].innerText = t.globalChat;
-        if(chatHeaders[1]) chatHeaders[1].innerText = t.wall;
-        sendBtns.forEach(btn => { if(btn) btn.innerText = t.send; });
-        if(callBtn) callBtn.innerText = t.call;
-        uploadBtns.forEach(btn => { if(btn) btn.innerText = t.upload; });
-        logoutBtnsUI.forEach(btn => { if(btn) btn.innerText = t.logout; });
-        adminBtnsUI.forEach(btn => { if(btn) btn.innerText = t.admin; });
-        if(usernamePlaceholder) usernamePlaceholder.placeholder = t.usernamePlaceholder;
-        if(termsBox) termsBox.innerHTML = `<strong>${t.terms.split('\n')[0]}</strong><br>${t.terms.split('\n').slice(1).join('<br>')}`;
+        if(elements.welcomeTitle) elements.welcomeTitle.innerText = t.welcomeTitle;
+        if(elements.acceptTermsLabel) elements.acceptTermsLabel.innerText = t.acceptTerms;
+        if(elements.joinBtn) elements.joinBtn.innerText = t.joinBtn;
+        if(elements.sendBtn) elements.sendBtn.innerText = t.send;
+        if(elements.callGlobalBtn) elements.callGlobalBtn.innerText = t.call;
+        if(elements.uploadMediaBtn) elements.uploadMediaBtn.innerText = t.upload;
+        if(elements.usernameInput) elements.usernameInput.placeholder = t.usernamePlaceholder;
+        if(elements.termsBox) elements.termsBox.innerHTML = `<strong>${t.terms.split('\n')[0]}</strong><br>${t.terms.split('\n').slice(1).join('<br>')}`;
+        
+        document.querySelectorAll('#requestCoinsBtn, #requestCoinsBtn2').forEach(btn => { if(btn) btn.innerText = t.requestCoins; });
+        document.querySelectorAll('#changeLangBtn, #changeLangBtn2').forEach(btn => { if(btn) btn.innerText = t.changeLang; });
+        document.querySelectorAll('.online-users h4').forEach(el => { if(el) el.innerText = t.onlineUsers; });
+        document.querySelectorAll('.chat-header').forEach((el, i) => { if(el && i === 0) el.innerText = t.globalChat; if(el && i === 1) el.innerText = t.wall; });
+        document.querySelectorAll('#logoutBtn, #logoutBtn2, #logoutBtnMobile').forEach(btn => { if(btn) btn.innerText = t.logout; });
+        document.querySelectorAll('#adminLoginBtn, #adminLoginBtn2, #adminLoginBtnMobile').forEach(btn => { if(btn) btn.innerText = t.admin; });
     }
     
     async function translateText(text, targetLang, sourceLang = 'es') {
@@ -398,27 +402,10 @@
         const cacheKey = text + '|' + sourceLang + '|' + targetLang;
         if (translationCache.has(cacheKey)) return translationCache.get(cacheKey);
         try {
-            // Usar traducción local para inglés ya que la API a veces falla
-            if(sourceLang === 'es' && targetLang === 'en') {
-                const simpleTranslations = {
-                    'hola': 'hello', 'como estas': 'how are you', 'bien': 'good', 'gracias': 'thanks',
-                    'adios': 'goodbye', 'que tal': 'what\'s up', 'buenos dias': 'good morning',
-                    'buenas noches': 'good night', 'por favor': 'please', 'si': 'yes', 'no': 'no'
-                };
-                const lowerText = text.toLowerCase();
-                for(let [key, value] of Object.entries(simpleTranslations)) {
-                    if(lowerText.includes(key)) {
-                        const translated = text.toLowerCase().replace(key, value);
-                        translationCache.set(cacheKey, translated);
-                        return translated;
-                    }
-                }
-            }
             const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`;
             const res = await fetch(url);
             const data = await res.json();
             let translated = data.responseData.translatedText || text;
-            // Limpiar HTML entities
             translated = translated.replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, '&');
             translationCache.set(cacheKey, translated);
             return translated;
@@ -507,7 +494,6 @@
         const div = document.createElement('div');
         div.className = `message ${isOwn ? 'own' : ''}`;
         let displayText = data.text;
-        // Traducción automática para mensajes de otros usuarios
         if (!isOwn && userLanguage !== (data.originalLang || 'es')) {
             displayText = await translateText(data.text, userLanguage, data.originalLang || 'es');
         }
@@ -580,19 +566,30 @@
     }
     
     function updateCoins(coins) {
-        const spans = [document.getElementById('myCoins'), document.getElementById('myCoins2')];
-        spans.forEach(span => { if(span) span.innerText = coins; });
+        const spans = ['myCoins', 'myCoins2', 'myCoinsPC', 'myCoinsMobile'];
+        spans.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.innerText = coins;
+        });
     }
     
     function updateMyName(name) {
-        const elms = [document.getElementById('myName'), document.getElementById('myName2')];
-        elms.forEach(el => { if(el) el.innerText = name; });
+        const elms = ['myName', 'myName2', 'myNamePC', 'myNameMobile'];
+        elms.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.innerText = name;
+        });
     }
     
-    // WebRTC Videollamada
-    const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+    // WebRTC Videollamada mejorada
+    const configuration = { 
+        iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' }
+        ] 
+    };
     
-    async function startCall(targetUser, durationMinutes, isPrivate = false) {
+    async function startCall(targetUser, durationMinutes) {
         socket.emit('check call cost', { durationMinutes }, async (res) => {
             if (!res || !res.canAfford) {
                 alert(`Necesitas ${res?.cost || 1.5} monedas para llamar ${durationMinutes} minutos`);
@@ -604,6 +601,8 @@
                 showCallUI(durationMinutes, true, targetUser);
                 
                 peerConnection = new RTCPeerConnection(configuration);
+                
+                // Agregar todas las tracks al peer connection
                 localStream.getTracks().forEach(track => {
                     peerConnection.addTrack(track, localStream);
                 });
@@ -618,6 +617,15 @@
                     const remoteVideo = document.getElementById('remoteVideo');
                     if (remoteVideo && event.streams[0]) {
                         remoteVideo.srcObject = event.streams[0];
+                    }
+                };
+                
+                peerConnection.onconnectionstatechange = () => {
+                    if (peerConnection.connectionState === 'connected') {
+                        addSystemMessage('📹 Conexión de videollamada establecida');
+                    } else if (peerConnection.connectionState === 'failed') {
+                        addSystemMessage('❌ Falló la conexión de videollamada');
+                        endCall();
                     }
                 };
                 
@@ -736,6 +744,12 @@
                 }
             };
             
+            peerConnection.onconnectionstatechange = () => {
+                if (peerConnection.connectionState === 'connected') {
+                    addSystemMessage('📹 Conexión de videollamada establecida');
+                }
+            };
+            
             await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
             const answer = await peerConnection.createAnswer();
             await peerConnection.setLocalDescription(answer);
@@ -775,7 +789,7 @@
     
     socket.on('coins update', updateCoins);
     
-    // Chat privado con botón enviar funcional y videollamada
+    // Chat privado
     function openPrivateChat(targetUser) {
         if (targetUser === currentUsername) return;
         if (floatingWindows.has(targetUser)) {
@@ -849,7 +863,7 @@
             if(callPrivateBtn) {
                 callPrivateBtn.onclick = () => {
                     const mins = prompt('Duración en minutos (2,4,6...)', '2');
-                    if (mins) startCall(targetUser, parseInt(mins), true);
+                    if (mins && !isNaN(mins) && mins > 0) startCall(targetUser, parseInt(mins));
                 };
             }
             
@@ -874,7 +888,6 @@
                     const msgDiv = document.createElement('div');
                     msgDiv.className = `message ${data.username === currentUsername ? 'own' : ''}`;
                     let displayText = data.text;
-                    // Traducción automática para mensajes privados también
                     if (data.username !== currentUsername && userLanguage !== (data.originalLang || 'es')) {
                         displayText = await translateText(data.text, userLanguage, data.originalLang || 'es');
                     }
@@ -980,7 +993,7 @@
         messagesContainer.onscroll = () => { autoScroll = messagesContainer.scrollHeight - messagesContainer.clientHeight <= messagesContainer.scrollTop + 80; };
     }
     
-    const logoutBtns = document.querySelectorAll('#logoutBtn, #logoutBtn2');
+    const logoutBtns = document.querySelectorAll('#logoutBtn, #logoutBtn2, #logoutBtnMobile');
     logoutBtns.forEach(btn => {
         if(btn) {
             btn.onclick = () => { 
@@ -1001,85 +1014,167 @@
         };
     }
     
-    // Admin login
-    const adminBtns = document.querySelectorAll('#adminLoginBtn, #adminLoginBtn2');
+    // Admin login - Versión mejorada
+    function setupAdminPanel(containerId) {
+        const container = document.getElementById(containerId);
+        if(!container) return;
+        
+        container.style.display = 'block';
+        container.innerHTML = `
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <h4>Panel Admin</h4>
+                <button class="closeAdminBtn" style="background:var(--danger); border:none; color:white; padding:2px 10px; border-radius:8px; cursor:pointer;">✖</button>
+            </div>
+            <div id="adminRequestsList_${containerId}"></div>
+            <h5 style="margin-top:10px;">Dar monedas</h5>
+            <input type="text" id="adminGiveUser_${containerId}" placeholder="Nombre usuario" style="width:100%; padding:8px; margin:5px 0; border-radius:8px; border:none;">
+            <input type="number" id="adminGiveAmount_${containerId}" min="1" max="12" placeholder="Cantidad" style="width:100%; padding:8px; margin:5px 0; border-radius:8px; border:none;">
+            <button id="adminGiveCoinsBtn_${containerId}" style="background:var(--success); border:none; padding:8px; border-radius:8px; color:white; cursor:pointer; width:100%; margin:5px 0;">Dar monedas</button>
+            <h5 style="margin-top:10px;">Bloquear/Desbloquear</h5>
+            <input type="text" id="adminBlockUser_${containerId}" placeholder="Nombre usuario" style="width:100%; padding:8px; margin:5px 0; border-radius:8px; border:none;">
+            <button id="adminBlockBtn_${containerId}" style="background:var(--danger); border:none; padding:8px; border-radius:8px; color:white; cursor:pointer; width:48%; margin:5px 1%;">Bloquear</button>
+            <button id="adminUnblockBtn_${containerId}" style="background:var(--accent); border:none; padding:8px; border-radius:8px; color:white; cursor:pointer; width:48%; margin:5px 1%;">Desbloquear</button>
+        `;
+        
+        // Eventos específicos para este panel
+        const closeBtn = container.querySelector('.closeAdminBtn');
+        if(closeBtn) {
+            closeBtn.onclick = () => {
+                container.style.display = 'none';
+                isAdmin = false;
+            };
+        }
+        
+        const giveCoinsBtn = document.getElementById(`adminGiveCoinsBtn_${containerId}`);
+        if(giveCoinsBtn) {
+            giveCoinsBtn.onclick = () => {
+                const target = document.getElementById(`adminGiveUser_${containerId}`)?.value.trim();
+                const amount = parseInt(document.getElementById(`adminGiveAmount_${containerId}`)?.value);
+                if (target && amount && amount > 0) {
+                    socket.emit('admin give coins', { targetUsername: target, amount }, (res) => {
+                        alert(res.success ? `✅ ${amount} monedas enviadas a ${target}` : `❌ ${res.error}`);
+                        if(res.success) {
+                            document.getElementById(`adminGiveUser_${containerId}`).value = '';
+                            document.getElementById(`adminGiveAmount_${containerId}`).value = '';
+                        }
+                    });
+                } else {
+                    alert('❌ Ingresa nombre y cantidad válida (1-12)');
+                }
+            };
+        }
+        
+        const blockBtn = document.getElementById(`adminBlockBtn_${containerId}`);
+        if(blockBtn) {
+            blockBtn.onclick = () => {
+                const user = document.getElementById(`adminBlockUser_${containerId}`)?.value.trim();
+                if (user) {
+                    socket.emit('admin toggle block', { targetUsername: user, block: true }, (res) => {
+                        alert(res.success ? `✅ Usuario ${user} bloqueado` : `❌ ${res.error}`);
+                        if(res.success) document.getElementById(`adminBlockUser_${containerId}`).value = '';
+                    });
+                } else {
+                    alert('❌ Ingresa nombre de usuario');
+                }
+            };
+        }
+        
+        const unblockBtn = document.getElementById(`adminUnblockBtn_${containerId}`);
+        if(unblockBtn) {
+            unblockBtn.onclick = () => {
+                const user = document.getElementById(`adminBlockUser_${containerId}`)?.value.trim();
+                if (user) {
+                    socket.emit('admin toggle block', { targetUsername: user, block: false }, (res) => {
+                        alert(res.success ? `✅ Usuario ${user} desbloqueado` : `❌ ${res.error}`);
+                        if(res.success) document.getElementById(`adminBlockUser_${containerId}`).value = '';
+                    });
+                } else {
+                    alert('❌ Ingresa nombre de usuario');
+                }
+            };
+        }
+        
+        // Función para actualizar solicitudes en este panel
+        const updateRequests = (requests) => {
+            const listContainer = document.getElementById(`adminRequestsList_${containerId}`);
+            if(!listContainer) return;
+            listContainer.innerHTML = '';
+            if (!requests || requests.length === 0) { 
+                listContainer.innerHTML = '<div style="color:#888;">No hay solicitudes pendientes</div>'; 
+                return; 
+            }
+            requests.forEach((req, idx) => {
+                const div = document.createElement('div');
+                div.style.cssText = 'background:var(--bg-chat); padding:8px; margin:5px 0; border-radius:8px;';
+                div.innerHTML = `
+                    <strong>${escapeHtml(req.from)}</strong> pide ${req.amount} monedas
+                    <div style="margin-top:5px;">
+                        <button class="admin-give-req" data-idx="${idx}" style="background:var(--success); border:none; padding:4px 12px; border-radius:6px; color:white; cursor:pointer; margin-right:5px;">✅ Dar</button>
+                        <button class="admin-deny-req" data-idx="${idx}" style="background:var(--danger); border:none; padding:4px 12px; border-radius:6px; color:white; cursor:pointer;">❌ Denegar</button>
+                    </div>
+                `;
+                listContainer.appendChild(div);
+            });
+            
+            listContainer.querySelectorAll('.admin-give-req').forEach(btn => {
+                btn.onclick = () => socket.emit('admin resolve request', { requestIndex: parseInt(btn.dataset.idx), giveCoins: true });
+            });
+            listContainer.querySelectorAll('.admin-deny-req').forEach(btn => {
+                btn.onclick = () => socket.emit('admin resolve request', { requestIndex: parseInt(btn.dataset.idx), giveCoins: false });
+            });
+        };
+        
+        return updateRequests;
+    }
+    
+    // Admin login handler
+    const adminBtns = document.querySelectorAll('#adminLoginBtn, #adminLoginBtn2, #adminLoginBtnMobile');
+    let adminUpdateFunctions = [];
+    
     adminBtns.forEach(btn => {
         if(btn) {
             btn.onclick = () => {
-                const pwd = prompt('Contraseña de administrador:');
+                const pwd = prompt('🔐 Contraseña de administrador:');
                 if (pwd) {
                     socket.emit('admin login', pwd, (success) => {
                         if (success) {
                             isAdmin = true;
-                            const adminDivs = document.querySelectorAll('#adminPanel, #adminPanel2');
-                            adminDivs.forEach(div => {
-                                if(div) {
-                                    div.style.display = 'block';
-                                    div.innerHTML = `
-                                        <div style="display:flex; justify-content:space-between;"><h4>Panel Admin</h4><button class="closeAdminBtn">✖</button></div>
-                                        <div id="adminRequestsList"></div>
-                                        <h5>Dar monedas</h5>
-                                        <input type="text" id="adminGiveUser" placeholder="Nombre usuario">
-                                        <input type="number" id="adminGiveAmount" min="1" max="12" placeholder="Cantidad">
-                                        <button id="adminGiveCoinsBtn">Dar</button>
-                                        <h5>Bloquear/Desbloquear</h5>
-                                        <input type="text" id="adminBlockUser" placeholder="Nombre usuario">
-                                        <button id="adminBlockBtn">Bloquear</button>
-                                        <button id="adminUnblockBtn">Desbloquear</button>
-                                    `;
+                            // Configurar todos los paneles admin
+                            const panels = ['adminPanel2', 'adminPanelMobile'];
+                            adminUpdateFunctions = [];
+                            
+                            panels.forEach(panelId => {
+                                const panel = document.getElementById(panelId);
+                                if(panel) {
+                                    const updateFunc = setupAdminPanel(panelId);
+                                    if(updateFunc) adminUpdateFunctions.push(updateFunc);
                                 }
                             });
-                            document.querySelectorAll('.closeAdminBtn').forEach(btnClose => {
-                                btnClose.onclick = () => {
-                                    document.querySelectorAll('#adminPanel, #adminPanel2').forEach(d => { if(d) d.style.display = 'none'; });
-                                    isAdmin = false;
-                                };
+                            
+                            // Cargar solicitudes
+                            socket.emit('admin pending requests', (requests) => {
+                                adminUpdateFunctions.forEach(fn => fn(requests));
                             });
-                            document.querySelectorAll('#adminGiveCoinsBtn').forEach(giveBtn => {
-                                giveBtn.onclick = () => {
-                                    const target = document.getElementById('adminGiveUser')?.value.trim();
-                                    const amount = parseInt(document.getElementById('adminGiveAmount')?.value);
-                                    if (target && amount) socket.emit('admin give coins', { targetUsername: target, amount }, (res) => alert(res.success ? 'Monedas enviadas' : res.error));
-                                    else alert('Ingresa nombre y cantidad');
-                                };
+                            
+                            socket.on('admin pending requests', (requests) => {
+                                adminUpdateFunctions.forEach(fn => fn(requests));
                             });
-                            document.querySelectorAll('#adminBlockBtn').forEach(blockBtn => {
-                                blockBtn.onclick = () => {
-                                    const user = document.getElementById('adminBlockUser')?.value.trim();
-                                    if (user) socket.emit('admin toggle block', { targetUsername: user, block: true }, (res) => alert(res.success ? 'Bloqueado' : res.error));
-                                };
+                            
+                            socket.on('new coin request', () => {
+                                socket.emit('admin pending requests', (requests) => {
+                                    adminUpdateFunctions.forEach(fn => fn(requests));
+                                });
                             });
-                            document.querySelectorAll('#adminUnblockBtn').forEach(unblockBtn => {
-                                unblockBtn.onclick = () => {
-                                    const user = document.getElementById('adminBlockUser')?.value.trim();
-                                    if (user) socket.emit('admin toggle block', { targetUsername: user, block: false }, (res) => alert(res.success ? 'Desbloqueado' : res.error));
-                                };
-                            });
-                            socket.emit('admin pending requests', (requests) => updateAdminRequests(requests));
-                            socket.on('admin pending requests', (requests) => updateAdminRequests(requests));
-                            socket.on('new coin request', () => socket.emit('admin pending requests', (r) => updateAdminRequests(r)));
-                        } else alert('Contraseña incorrecta');
+                            
+                            addSystemMessage('🔐 Modo administrador activado');
+                        } else {
+                            alert('❌ Contraseña incorrecta');
+                        }
                     });
                 }
             };
         }
     });
-    
-    function updateAdminRequests(requests) {
-        const containers = document.querySelectorAll('#adminRequestsList');
-        containers.forEach(container => {
-            if (!container) return;
-            container.innerHTML = '';
-            if (!requests || requests.length === 0) { container.innerHTML = '<div>No hay solicitudes</div>'; return; }
-            requests.forEach((req, idx) => {
-                const div = document.createElement('div');
-                div.innerHTML = `${req.from} pide ${req.amount} monedas <button class="admin-give-req" data-idx="${idx}">Dar</button> <button class="admin-deny-req" data-idx="${idx}">Denegar</button>`;
-                container.appendChild(div);
-            });
-            document.querySelectorAll('.admin-give-req').forEach(btn => btn.onclick = () => socket.emit('admin resolve request', { requestIndex: parseInt(btn.dataset.idx), giveCoins: true }));
-            document.querySelectorAll('.admin-deny-req').forEach(btn => btn.onclick = () => socket.emit('admin resolve request', { requestIndex: parseInt(btn.dataset.idx), giveCoins: false }));
-        });
-    }
     
     function joinChat(username, lang, country) {
         socket.emit('set username', { username, language: lang, country }, (success, data) => {
