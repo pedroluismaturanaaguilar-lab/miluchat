@@ -2,22 +2,27 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>MILUCHAT</title>
     <script src="/socket.io/socket.io.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, 'Segoe UI'; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif; }
         :root {
             --bg-dark: #1a1e24;
             --bg-sidebar: #22262e;
             --bg-chat: #2a2f38;
             --text-primary: #e1e9f0;
             --accent: #3b82f6;
+            --accent-hover: #2563eb;
             --border: #3a4050;
             --bubble-own: #3b82f6;
             --bubble-other: #323842;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --warning: #f59e0b;
         }
-        body { background: var(--bg-dark); height: 100vh; display: flex; justify-content: center; align-items: center; margin: 0; padding: 0; }
+        body { background: var(--bg-dark); height: 100vh; display: flex; justify-content: center; align-items: center; margin: 0; padding: 0; overflow: hidden; }
+        
         .welcome-screen {
             background: var(--bg-sidebar);
             max-width: 400px;
@@ -25,95 +30,235 @@
             padding: 1.5rem;
             border-radius: 24px;
             text-align: center;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
         }
         .welcome-screen select, .welcome-screen input, .welcome-screen button {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin: 8px 0;
             border-radius: 12px;
             border: none;
             background: var(--bg-chat);
             color: var(--text-primary);
+            font-size: 16px;
         }
-        .welcome-screen button { background: var(--accent); cursor: pointer; font-weight: bold; }
+        .welcome-screen button { background: var(--accent); cursor: pointer; font-weight: bold; transition: background 0.2s; }
+        .welcome-screen button:hover { background: var(--accent-hover); }
         .terms-box { font-size: 0.75rem; margin: 10px 0; text-align: left; max-height: 130px; overflow-y: auto; background: var(--bg-chat); padding: 8px; border-radius: 12px; }
+        
         .chat-app { display: none; width: 100%; height: 100vh; background: var(--bg-sidebar); position: fixed; top: 0; left: 0; }
-        .app-grid { display: grid; grid-template-columns: 260px 1fr 260px; height: 100%; }
+        .app-grid { display: grid; grid-template-columns: 260px 1fr 260px; height: 100%; transition: all 0.3s; }
+        
         .left-panel { background: #1a1e24; border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
         .my-info { padding: 16px; text-align: center; border-bottom: 1px solid var(--border); }
         .my-coins { font-size: 1.4rem; color: gold; margin: 8px 0; }
-        .btn-sm { background: #f59e0b; border: none; padding: 6px; border-radius: 40px; color: white; cursor: pointer; width: 100%; margin-top: 6px; }
+        .btn-sm { background: var(--warning); border: none; padding: 8px; border-radius: 40px; color: white; cursor: pointer; width: 100%; margin-top: 6px; font-size: 14px; transition: opacity 0.2s; }
+        .btn-sm:active { opacity: 0.8; }
         .online-users { padding: 12px; }
-        .user-online { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 40px; background: var(--bg-chat); margin: 6px 0; cursor: pointer; }
+        .user-online { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 40px; background: var(--bg-chat); margin: 6px 0; cursor: pointer; transition: background 0.2s; }
+        .user-online:active { background: var(--border); }
         .status-dot { width: 10px; height: 10px; background: #22c55e; border-radius: 50%; display: inline-block; }
+        
         .center-area { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); overflow: hidden; }
         .chat-column, .wall-column { background: var(--bg-chat); display: flex; flex-direction: column; overflow: hidden; }
         .chat-header { padding: 12px; background: var(--bg-sidebar); border-bottom: 1px solid var(--border); font-weight: bold; }
         .messages-container { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+        
         .emoji-row { display: flex; gap: 6px; padding: 6px 12px; background: var(--bg-sidebar); overflow-x: auto; }
-        .emoji-item { font-size: 1.2rem; cursor: pointer; }
+        .emoji-item { font-size: 1.2rem; cursor: pointer; padding: 4px; transition: transform 0.1s; }
+        .emoji-item:active { transform: scale(1.2); }
+        
         .input-fixed { padding: 8px 12px; background: var(--bg-sidebar); display: flex; gap: 8px; border-top: 1px solid var(--border); }
-        .input-fixed textarea { flex: 1; border: none; border-radius: 20px; padding: 8px; background: var(--bg-chat); color: var(--text-primary); resize: none; }
-        .input-fixed button { background: var(--accent); border: none; padding: 8px 16px; border-radius: 20px; color: white; cursor: pointer; }
+        .input-fixed textarea { flex: 1; border: none; border-radius: 20px; padding: 10px; background: var(--bg-chat); color: var(--text-primary); resize: none; font-size: 16px; }
+        .input-fixed button { background: var(--accent); border: none; padding: 10px 20px; border-radius: 20px; color: white; cursor: pointer; font-weight: bold; transition: background 0.2s; }
+        .input-fixed button:active { background: var(--accent-hover); }
+        
         .media-wall { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
         .media-post { background: var(--bg-sidebar); border-radius: 16px; padding: 8px; }
-        .media-post img, .media-post video { max-width: 100%; border-radius: 12px; max-height: 150px; }
-        .message { display: flex; flex-direction: column; max-width: 75%; animation: fadeIn 0.2s; }
+        .media-post img, .media-post video { max-width: 100%; border-radius: 12px; max-height: 200px; width: auto; }
+        
+        .message { display: flex; flex-direction: column; max-width: 80%; animation: fadeIn 0.2s; }
         .message.own { align-self: flex-end; }
-        .message-bubble { padding: 6px 12px; border-radius: 16px; background: var(--bubble-other); color: var(--text-primary); word-break: break-word; }
+        .message-bubble { padding: 8px 14px; border-radius: 18px; background: var(--bubble-other); color: var(--text-primary); word-break: break-word; font-size: 15px; }
         .message.own .message-bubble { background: var(--bubble-own); }
         .message-info { font-size: 0.65rem; color: #8a98a9; margin: 2px 8px 0; display: flex; justify-content: space-between; align-items: center; }
-        .delete-msg { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 0.7rem; margin-left: 8px; }
+        .delete-msg { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 0.7rem; margin-left: 8px; padding: 2px 4px; }
         .system-message { text-align: center; font-size: 0.7rem; background: #2a2f38; padding: 4px; border-radius: 20px; width: fit-content; margin: 4px auto; color: #8a98a9; }
-        .floating-chat { position: fixed; bottom: 20px; right: 20px; width: 340px; height: 480px; background: var(--bg-sidebar); border-radius: 16px; display: flex; flex-direction: column; z-index: 1000; border: 1px solid var(--border); }
-        .floating-header { background: var(--accent); padding: 8px; border-radius: 16px 16px 0 0; display: flex; justify-content: space-between; cursor: move; color: white; }
+        
+        .floating-chat { position: fixed; bottom: 20px; right: 20px; width: 340px; height: 480px; background: var(--bg-sidebar); border-radius: 16px; display: flex; flex-direction: column; z-index: 1000; border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .floating-header { background: var(--accent); padding: 10px; border-radius: 16px 16px 0 0; display: flex; justify-content: space-between; cursor: move; color: white; }
+        .floating-header button { background: none; border: none; color: white; cursor: pointer; font-size: 16px; padding: 0 5px; }
         .floating-messages { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 8px; }
         .floating-emoji-row { display: flex; gap: 6px; padding: 6px; overflow-x: auto; background: var(--bg-sidebar); }
         .floating-input-wrapper { display: flex; gap: 6px; padding: 6px; background: var(--bg-sidebar); }
-        .floating-input-wrapper input { flex: 1; padding: 6px; border-radius: 20px; border: none; background: var(--bg-chat); color: var(--text-primary); }
-        .floating-input-wrapper button { background: var(--accent); border: none; padding: 6px 12px; border-radius: 20px; color: white; cursor: pointer; }
-        .minimized { height: 40px !important; min-height: 40px !important; }
+        .floating-input-wrapper input { flex: 1; padding: 10px; border-radius: 20px; border: none; background: var(--bg-chat); color: var(--text-primary); font-size: 14px; }
+        .floating-input-wrapper button { background: var(--accent); border: none; padding: 8px 16px; border-radius: 20px; color: white; cursor: pointer; }
+        .minimized { height: 45px !important; min-height: 45px !important; }
         .minimized .floating-messages, .minimized .floating-emoji-row, .minimized .floating-input-wrapper { display: none; }
+        
         .right-panel { background: var(--bg-sidebar); border-left: 1px solid var(--border); padding: 12px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
         .admin-panel { background: #1e293b; border-radius: 12px; padding: 12px; margin-top: 12px; }
-        /* Estilos para la videollamada */
+        
         .call-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.95);
             z-index: 2000;
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
+            backdrop-filter: blur(8px);
         }
-        .call-video {
-            background: black;
-            border-radius: 20px;
-            width: 80%;
-            max-width: 600px;
-            margin: 10px;
+        .call-container {
+            background: #1a1e24;
+            border-radius: 24px;
+            padding: 20px;
+            max-width: 95%;
+            width: 800px;
+            position: relative;
         }
-        video { width: 100%; border-radius: 20px; background: #000; }
-        .call-controls { margin-top: 20px; }
-        @media (max-width: 800px) { .app-grid { grid-template-columns: 1fr; } .left-panel, .right-panel { display: none; } .center-area { grid-template-columns: 1fr; } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .videos-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .video-wrapper {
+            position: relative;
+            background: #000;
+            border-radius: 16px;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+        }
+        .video-wrapper video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .video-label {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+        .call-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .call-controls button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 40px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .call-controls button:active { transform: scale(0.95); }
+        .end-call-btn { background: var(--danger); color: white; }
+        .timer { text-align: center; color: white; font-size: 18px; margin-top: 15px; font-family: monospace; }
+        
+        .mobile-header {
+            display: none;
+            background: var(--bg-sidebar);
+            padding: 12px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+        }
+        .hamburger-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 0;
+            width: 44px;
+            height: 44px;
+        }
+        .mobile-menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 260px;
+            height: 100%;
+            background: var(--bg-sidebar);
+            z-index: 1001;
+            transition: left 0.3s;
+            overflow-y: auto;
+        }
+        .mobile-menu.open { left: 0; }
+        
+        @media (max-width: 800px) {
+            .mobile-header { display: flex; align-items: center; gap: 12px; }
+            .chat-app { padding-top: 60px; }
+            .app-grid { display: block; }
+            .left-panel, .right-panel { display: none; position: fixed; top: 60px; bottom: 0; width: 260px; z-index: 99; }
+            .left-panel { left: 0; }
+            .right-panel { right: 0; }
+            .center-area { grid-template-columns: 1fr; height: calc(100vh - 60px); }
+            .chat-column, .wall-column { height: 50vh; }
+            .message { max-width: 85%; }
+            .input-fixed textarea { font-size: 16px; }
+            .input-fixed button { padding: 8px 16px; min-width: 60px; }
+            .floating-chat { width: 95%; right: 2.5%; left: 2.5%; bottom: 10px; height: 70vh; }
+            .videos-container { grid-template-columns: 1fr; gap: 10px; }
+            .video-wrapper { aspect-ratio: 16/9; }
+        }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 <div id="welcomeScreen" class="welcome-screen">
     <h1 id="welcomeTitle">MILUCHAT</h1>
     <select id="languageSelect">
-        <option value="es">Español</option><option value="en">English</option><option value="fr">Français</option>
-        <option value="de">Deutsch</option><option value="pt">Português</option><option value="it">Italiano</option>
-        <option value="zh">中文</option><option value="ja">日本語</option>
+        <option value="es">Español</option>
+        <option value="en">English</option>
+        <option value="fr">Français</option>
+        <option value="de">Deutsch</option>
+        <option value="pt">Português</option>
+        <option value="it">Italiano</option>
+        <option value="zh">中文</option>
+        <option value="ja">日本語</option>
     </select>
     <select id="countrySelect">
-        <option value="COL">Colombia</option><option value="USA">Estados Unidos</option><option value="MEX">México</option>
-        <option value="ESP">España</option><option value="ARG">Argentina</option><option value="CHL">Chile</option>
+        <option value="COL">Colombia</option>
+        <option value="USA">Estados Unidos</option>
+        <option value="MEX">México</option>
+        <option value="ESP">España</option>
+        <option value="ARG">Argentina</option>
+        <option value="CHL">Chile</option>
+        <option value="FRA">Francia</option>
+        <option value="JPN">Japón</option>
+        <option value="CHN">China</option>
+        <option value="DEU">Alemania</option>
+        <option value="ITA">Italia</option>
+        <option value="BRA">Brasil</option>
     </select>
     <input type="text" id="usernameInput" placeholder="Nombre de usuario">
     <div class="terms-box" id="termsBox"></div>
@@ -122,49 +267,72 @@
     <div id="errorMsg" style="color:#ef4444; margin-top:8px;"></div>
 </div>
 <div id="chatApp" class="chat-app">
+    <div class="mobile-header">
+        <button class="hamburger-btn" id="hamburgerBtn">☰</button>
+        <h3>MILUCHAT</h3>
+        <button class="hamburger-btn" id="rightMenuBtn" style="margin-left:auto;">⚙️</button>
+    </div>
+    <div class="mobile-menu-overlay" id="mobileOverlay"></div>
+    <div class="mobile-menu" id="mobileLeftMenu">
+        <div class="my-info">
+            <h3 id="myName">-</h3>
+            <div class="my-coins">💰 <span id="myCoins">0</span></div>
+            <button id="requestCoinsBtn" class="btn-sm">➕ Pedir monedas</button>
+            <button id="changeLangBtn" class="btn-sm">🌐 Cambiar idioma</button>
+        </div>
+        <div class="online-users">
+            <h4>📡 En línea</h4>
+            <div id="usersList"></div>
+        </div>
+    </div>
+    <div class="mobile-menu" id="mobileRightMenu" style="left: auto; right: -280px;">
+        <button id="logoutBtn" style="background:#ef4444; padding:12px; border-radius:12px; border:none; color:white; width:90%; margin:12px;">🚪 Cerrar sesión</button>
+        <button id="adminLoginBtn" style="background:#8b5cf6; padding:12px; border-radius:12px; border:none; color:white; width:90%; margin:12px;">🔐 Admin</button>
+        <div id="adminPanel" style="display:none; padding:12px;"></div>
+    </div>
     <div class="app-grid">
         <div class="left-panel">
             <div class="my-info">
-                <h3 id="myName">-</h3>
-                <div class="my-coins">💰 <span id="myCoins">0</span></div>
-                <button id="requestCoinsBtn" class="btn-sm" data-i18n="requestCoins">➕ Pedir monedas</button>
-                <button id="changeLangBtn" class="btn-sm" data-i18n="changeLang">🌐 Cambiar idioma</button>
+                <h3 id="myName2">-</h3>
+                <div class="my-coins">💰 <span id="myCoins2">0</span></div>
+                <button id="requestCoinsBtn2" class="btn-sm">➕ Pedir monedas</button>
+                <button id="changeLangBtn2" class="btn-sm">🌐 Cambiar idioma</button>
             </div>
             <div class="online-users">
-                <h4 data-i18n="onlineUsers">📡 En línea</h4>
-                <div id="usersList"></div>
+                <h4>📡 En línea</h4>
+                <div id="usersList2"></div>
             </div>
         </div>
         <div class="center-area">
             <div class="chat-column">
-                <div class="chat-header" data-i18n="globalChat">💬 Chat Global</div>
+                <div class="chat-header">💬 Chat Global</div>
                 <div id="messagesContainer" class="messages-container"></div>
                 <div class="emoji-row" id="emojiRow"></div>
                 <div class="input-fixed">
                     <textarea id="messageInput" rows="1" placeholder="Mensaje..."></textarea>
-                    <button id="sendBtn" data-i18n="send">Enviar</button>
-                    <button id="callGlobalBtn" style="background:#10b981;" data-i18n="call">📹</button>
+                    <button id="sendBtn">Enviar</button>
+                    <button id="callGlobalBtn" style="background:#10b981;">📹</button>
                 </div>
             </div>
             <div class="wall-column">
-                <div class="chat-header" data-i18n="wall">📸 Muro (sube fotos/videos)</div>
+                <div class="chat-header">📸 Muro (sube fotos/videos)</div>
                 <div id="mediaWall" class="media-wall"></div>
                 <div class="input-fixed">
-                    <button id="uploadMediaBtn" style="background:#f59e0b;" data-i18n="upload">📤 Subir</button>
+                    <button id="uploadMediaBtn" style="background:#f59e0b;">📤 Subir</button>
                     <input type="file" id="mediaFileInput" accept="image/*,video/*" style="display:none">
                 </div>
             </div>
         </div>
         <div class="right-panel">
-            <button id="logoutBtn" style="background:#ef4444; padding:8px; border-radius:12px; border:none; color:white;" data-i18n="logout">🚪 Cerrar sesión</button>
-            <button id="adminLoginBtn" style="background:#8b5cf6;" data-i18n="admin">🔐 Admin</button>
-            <div id="adminPanel" style="display:none;"></div>
+            <button id="logoutBtn2" style="background:#ef4444; padding:8px; border-radius:12px; border:none; color:white;">🚪 Cerrar sesión</button>
+            <button id="adminLoginBtn2" style="background:#8b5cf6;">🔐 Admin</button>
+            <div id="adminPanel2" style="display:none;"></div>
         </div>
     </div>
 </div>
 
 <script>
-    // Traducciones de la interfaz (objeto completo, igual que antes)
+    // Traducciones completas para todos los idiomas soportados
     const translations = {
         es: { welcomeTitle:"MILUCHAT", acceptTerms:"Acepto los términos", joinBtn:"Ingresar", requestCoins:"➕ Pedir monedas", changeLang:"🌐 Cambiar idioma", onlineUsers:"📡 En línea", globalChat:"💬 Chat Global", send:"Enviar", call:"📹", wall:"📸 Muro (sube fotos/videos)", upload:"📤 Subir", logout:"🚪 Cerrar sesión", admin:"🔐 Admin", terms:"📜 Términos y condiciones\n1. Aceptas las reglas de convivencia.\n2. El contenido subido expira en 12h.\n3. Las monedas se ganan con likes.\n4. Las videollamadas consumen monedas.", usernamePlaceholder:"Nombre de usuario" },
         en: { welcomeTitle:"MILUCHAT", acceptTerms:"I accept the terms", joinBtn:"Login", requestCoins:"➕ Request coins", changeLang:"🌐 Change language", onlineUsers:"📡 Online", globalChat:"💬 Global Chat", send:"Send", call:"📹", wall:"📸 Wall (upload photos/videos)", upload:"📤 Upload", logout:"🚪 Logout", admin:"🔐 Admin", terms:"📜 Terms and conditions\n1. You accept coexistence rules.\n2. Uploaded content expires in 12h.\n3. Coins are earned with likes.\n4. Video calls consume coins.", usernamePlaceholder:"Username" },
@@ -175,27 +343,8 @@
         zh: { welcomeTitle:"MILUCHAT", acceptTerms:"我接受条款", joinBtn:"登录", requestCoins:"➕ 请求硬币", changeLang:"🌐 更改语言", onlineUsers:"📡 在线", globalChat:"💬 全球聊天", send:"发送", call:"📹", wall:"📸 墙 (上传照片/视频)", upload:"📤 上传", logout:"🚪 退出", admin:"🔐 管理员", terms:"📜 条款和条件\n1. 您接受共存规则。\n2. 上传内容12小时后过期。\n3. 硬币通过点赞获得。\n4. 视频通话消耗硬币。", usernamePlaceholder:"用户名" },
         ja: { welcomeTitle:"MILUCHAT", acceptTerms:"利用規約に同意する", joinBtn:"ログイン", requestCoins:"➕ コインをリクエスト", changeLang:"🌐 言語変更", onlineUsers:"📡 オンライン", globalChat:"💬 グローバルチャット", send:"送信", call:"📹", wall:"📸 ウォール (写真/動画をアップロード)", upload:"📤 アップロード", logout:"🚪 ログアウト", admin:"🔐 管理者", terms:"📜 利用規約\n1. 共存ルールに同意します。\n2. アップロードされたコンテンツは12時間で期限切れになります。\n3. いいね！でコインを獲得できます。\n4. ビデオ通話にはコインが必要です。", usernamePlaceholder:"ユーザー名" }
     };
+    
     let userLanguage = 'es';
-    function applyUILanguage(lang) {
-        const t = translations[lang] || translations.es;
-        document.getElementById('welcomeTitle').innerText = t.welcomeTitle;
-        document.getElementById('acceptTermsLabel').innerText = t.acceptTerms;
-        document.getElementById('joinBtn').innerText = t.joinBtn;
-        document.getElementById('requestCoinsBtn').innerText = t.requestCoins;
-        document.getElementById('changeLangBtn').innerText = t.changeLang;
-        document.querySelector('.online-users h4').innerText = t.onlineUsers;
-        document.querySelector('.chat-header').innerText = t.globalChat;
-        document.getElementById('sendBtn').innerText = t.send;
-        document.getElementById('callGlobalBtn').innerText = t.call;
-        document.querySelector('.wall-column .chat-header').innerText = t.wall;
-        document.getElementById('uploadMediaBtn').innerText = t.upload;
-        document.getElementById('logoutBtn').innerText = t.logout;
-        document.getElementById('adminLoginBtn').innerText = t.admin;
-        document.getElementById('usernameInput').placeholder = t.usernamePlaceholder;
-        document.getElementById('termsBox').innerHTML = `<strong>${t.terms.split('\n')[0]}</strong><br>${t.terms.split('\n').slice(1).join('<br>')}`;
-    }
-
-    const socket = io();
     let currentUsername = null;
     let currentRoom = "global";
     let autoScroll = true;
@@ -203,55 +352,108 @@
     let mediaPosts = [];
     let userCountry = 'COL';
     let isAdmin = false;
-    let audioCtx = null;
-    let activeCall = null; // para gestionar la videollamada
-
-    // Sonido
-    function playSound() {
-        try {
-            if (!audioCtx) audioCtx = new (AudioContext || webkitAudioContext)();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.frequency.value = 800;
-            gain.gain.value = 0.1;
-            osc.start();
-            gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.3);
-            osc.stop(audioCtx.currentTime + 0.3);
-        } catch(e) {}
-    }
-    function showNotification(title, body) { if (Notification.permission === 'granted') new Notification(title, { body }); }
-    if (Notification.permission === 'default') Notification.requestPermission();
-
-    // Traducción de mensajes con caché
+    let activeCall = null;
+    let peerConnection = null;
+    let localStream = null;
     const translationCache = new Map();
+    
+    const socket = io();
+    
+    function applyUILanguage(lang) {
+        const t = translations[lang] || translations.es;
+        const welcomeTitle = document.getElementById('welcomeTitle');
+        const acceptTermsLabel = document.getElementById('acceptTermsLabel');
+        const joinBtnEl = document.getElementById('joinBtn');
+        const requestBtns = document.querySelectorAll('#requestCoinsBtn, #requestCoinsBtn2');
+        const langBtns = document.querySelectorAll('#changeLangBtn, #changeLangBtn2');
+        const onlineTitles = document.querySelectorAll('.online-users h4');
+        const chatHeaders = document.querySelectorAll('.chat-header');
+        const sendBtns = document.querySelectorAll('#sendBtn');
+        const callBtn = document.getElementById('callGlobalBtn');
+        const uploadBtns = document.querySelectorAll('#uploadMediaBtn');
+        const logoutBtnsUI = document.querySelectorAll('#logoutBtn, #logoutBtn2');
+        const adminBtnsUI = document.querySelectorAll('#adminLoginBtn, #adminLoginBtn2');
+        const usernamePlaceholder = document.getElementById('usernameInput');
+        const termsBox = document.getElementById('termsBox');
+        
+        if(welcomeTitle) welcomeTitle.innerText = t.welcomeTitle;
+        if(acceptTermsLabel) acceptTermsLabel.innerText = t.acceptTerms;
+        if(joinBtnEl) joinBtnEl.innerText = t.joinBtn;
+        requestBtns.forEach(btn => { if(btn) btn.innerText = t.requestCoins; });
+        langBtns.forEach(btn => { if(btn) btn.innerText = t.changeLang; });
+        onlineTitles.forEach(el => { if(el) el.innerText = t.onlineUsers; });
+        if(chatHeaders[0]) chatHeaders[0].innerText = t.globalChat;
+        if(chatHeaders[1]) chatHeaders[1].innerText = t.wall;
+        sendBtns.forEach(btn => { if(btn) btn.innerText = t.send; });
+        if(callBtn) callBtn.innerText = t.call;
+        uploadBtns.forEach(btn => { if(btn) btn.innerText = t.upload; });
+        logoutBtnsUI.forEach(btn => { if(btn) btn.innerText = t.logout; });
+        adminBtnsUI.forEach(btn => { if(btn) btn.innerText = t.admin; });
+        if(usernamePlaceholder) usernamePlaceholder.placeholder = t.usernamePlaceholder;
+        if(termsBox) termsBox.innerHTML = `<strong>${t.terms.split('\n')[0]}</strong><br>${t.terms.split('\n').slice(1).join('<br>')}`;
+    }
+    
     async function translateText(text, targetLang, sourceLang = 'es') {
         if (!text || targetLang === sourceLang) return text;
         const cacheKey = text + '|' + sourceLang + '|' + targetLang;
         if (translationCache.has(cacheKey)) return translationCache.get(cacheKey);
         try {
+            // Usar traducción local para inglés ya que la API a veces falla
+            if(sourceLang === 'es' && targetLang === 'en') {
+                const simpleTranslations = {
+                    'hola': 'hello', 'como estas': 'how are you', 'bien': 'good', 'gracias': 'thanks',
+                    'adios': 'goodbye', 'que tal': 'what\'s up', 'buenos dias': 'good morning',
+                    'buenas noches': 'good night', 'por favor': 'please', 'si': 'yes', 'no': 'no'
+                };
+                const lowerText = text.toLowerCase();
+                for(let [key, value] of Object.entries(simpleTranslations)) {
+                    if(lowerText.includes(key)) {
+                        const translated = text.toLowerCase().replace(key, value);
+                        translationCache.set(cacheKey, translated);
+                        return translated;
+                    }
+                }
+            }
             const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`;
             const res = await fetch(url);
             const data = await res.json();
-            const translated = data.responseData.translatedText || text;
+            let translated = data.responseData.translatedText || text;
+            // Limpiar HTML entities
+            translated = translated.replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, '&');
             translationCache.set(cacheKey, translated);
             return translated;
-        } catch(e) { return text; }
+        } catch(e) { 
+            console.error('Error traduciendo:', e);
+            return text; 
+        }
     }
-
-    // Emojis globales
+    
+    function playSound() {
+        try {
+            const audio = new Audio('data:audio/wav;base64,U3RlYWx0aCBzb3VuZA==');
+            audio.volume = 0.2;
+            audio.play().catch(e => console.log('Audio no soportado'));
+        } catch(e) {}
+    }
+    
+    function showNotification(title, body) { 
+        if (Notification.permission === 'granted' && document.hidden) 
+            new Notification(title, { body }); 
+    }
+    if (Notification.permission === 'default') Notification.requestPermission();
+    
     const emojis = ['😀', '😂', '😍', '🎉', '👍', '❤️', '🔥', '⭐', '🍕', '🎮', '😎', '👏'];
     const emojiRow = document.getElementById('emojiRow');
-    emojis.forEach(emo => {
-        const span = document.createElement('span');
-        span.className = 'emoji-item';
-        span.textContent = emo;
-        span.onclick = () => sendTextMessage(emo);
-        emojiRow.appendChild(span);
-    });
-
-    // DOM elements
+    if(emojiRow) {
+        emojis.forEach(emo => {
+            const span = document.createElement('span');
+            span.className = 'emoji-item';
+            span.textContent = emo;
+            span.onclick = () => sendTextMessage(emo);
+            emojiRow.appendChild(span);
+        });
+    }
+    
     const welcomeDiv = document.getElementById('welcomeScreen');
     const chatDiv = document.getElementById('chatApp');
     const usernameInput = document.getElementById('usernameInput');
@@ -263,25 +465,49 @@
     const messagesContainer = document.getElementById('messagesContainer');
     const messageInput = document.getElementById('messageInput');
     const sendBtn = document.getElementById('sendBtn');
-    const usersListDiv = document.getElementById('usersList');
-    const logoutBtn = document.getElementById('logoutBtn');
+    const callGlobalBtn = document.getElementById('callGlobalBtn');
     const uploadMediaBtn = document.getElementById('uploadMediaBtn');
     const mediaFileInput = document.getElementById('mediaFileInput');
-    const callGlobalBtn = document.getElementById('callGlobalBtn');
-    const myCoinsSpan = document.getElementById('myCoins');
-    const myNameSpan = document.getElementById('myName');
     const mediaWall = document.getElementById('mediaWall');
-    const requestCoinsBtn = document.getElementById('requestCoinsBtn');
-    const changeLangBtn = document.getElementById('changeLangBtn');
-    const adminLoginBtn = document.getElementById('adminLoginBtn');
-    const adminPanelDiv = document.getElementById('adminPanel');
-
-    acceptTermsCheck.onchange = () => { joinBtn.disabled = !acceptTermsCheck.checked; };
-
+    
+    // Mobile menu
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const rightMenuBtn = document.getElementById('rightMenuBtn');
+    const mobileOverlay = document.getElementById('mobileOverlay');
+    const mobileLeftMenu = document.getElementById('mobileLeftMenu');
+    const mobileRightMenu = document.getElementById('mobileRightMenu');
+    
+    function closeMenus() {
+        if(mobileLeftMenu) mobileLeftMenu.classList.remove('open');
+        if(mobileRightMenu) mobileRightMenu.classList.remove('open');
+        if(mobileOverlay) mobileOverlay.style.display = 'none';
+    }
+    
+    if(hamburgerBtn) {
+        hamburgerBtn.onclick = () => {
+            if(mobileLeftMenu) mobileLeftMenu.classList.toggle('open');
+            if(mobileRightMenu) mobileRightMenu.classList.remove('open');
+            if(mobileOverlay) mobileOverlay.style.display = mobileLeftMenu?.classList.contains('open') ? 'block' : 'none';
+        };
+    }
+    if(rightMenuBtn) {
+        rightMenuBtn.onclick = () => {
+            if(mobileRightMenu) mobileRightMenu.classList.toggle('open');
+            if(mobileLeftMenu) mobileLeftMenu.classList.remove('open');
+            if(mobileOverlay) mobileOverlay.style.display = mobileRightMenu?.classList.contains('open') ? 'block' : 'none';
+        };
+    }
+    if(mobileOverlay) mobileOverlay.onclick = closeMenus;
+    
+    if(acceptTermsCheck) {
+        acceptTermsCheck.onchange = () => { if(joinBtn) joinBtn.disabled = !acceptTermsCheck.checked; };
+    }
+    
     async function addMessageToDOM(data, isOwn) {
         const div = document.createElement('div');
         div.className = `message ${isOwn ? 'own' : ''}`;
         let displayText = data.text;
+        // Traducción automática para mensajes de otros usuarios
         if (!isOwn && userLanguage !== (data.originalLang || 'es')) {
             displayText = await translateText(data.text, userLanguage, data.originalLang || 'es');
         }
@@ -293,34 +519,39 @@
                 ${isOwn ? `<button class="delete-msg" data-id="${data.id}">🗑️</button>` : ''}
             </div>
         `;
-        messagesContainer.appendChild(div);
-        if (autoScroll) messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        if(messagesContainer) {
+            messagesContainer.appendChild(div);
+            if (autoScroll) messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
         playSound();
         if (!isOwn && document.hidden) showNotification(data.username, displayText);
         const delBtn = div.querySelector('.delete-msg');
         if (delBtn) delBtn.onclick = () => { if(confirm('¿Eliminar mensaje?')) socket.emit('delete message', { messageId: data.id }); };
     }
-
+    
     function addSystemMessage(text) {
         const div = document.createElement('div');
         div.className = 'system-message';
         div.innerText = text;
-        messagesContainer.appendChild(div);
-        if (autoScroll) messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        if(messagesContainer) {
+            messagesContainer.appendChild(div);
+            if (autoScroll) messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
         playSound();
     }
-
+    
     function renderMediaWall() {
+        if(!mediaWall) return;
         mediaWall.innerHTML = '';
         mediaPosts.forEach(post => {
             const div = document.createElement('div');
             div.className = 'media-post';
-            const mediaHtml = post.type === 'image' ? `<img src="${post.content}">` : `<video controls src="${post.content}"></video>`;
+            const mediaHtml = post.type === 'image' ? `<img src="${post.content}" loading="lazy">` : `<video controls src="${post.content}" preload="metadata"></video>`;
             div.innerHTML = `
                 <div><strong>${escapeHtml(post.username)}</strong> <small>${new Date(post.timestamp).toLocaleString()}</small></div>
                 ${mediaHtml}
                 <div>
-                    <button class="like-btn" data-id="${post.id}">❤️ ${post.likes}</button>
+                    <button class="like-btn" data-id="${post.id}">❤️ ${post.likes || 0}</button>
                     ${post.username === currentUsername ? `<button class="delete-media" data-id="${post.id}">🗑️</button>` : ''}
                 </div>
                 <small>Expira: ${new Date(post.expiresAt).toLocaleTimeString()}</small>
@@ -330,68 +561,114 @@
         document.querySelectorAll('.like-btn').forEach(btn => btn.onclick = () => socket.emit('like content', { contentId: btn.dataset.id }));
         document.querySelectorAll('.delete-media').forEach(btn => btn.onclick = () => { if(confirm('¿Eliminar contenido?')) socket.emit('delete media', { postId: btn.dataset.id }); });
     }
-
+    
     function updateUsersList(users) {
-        usersListDiv.innerHTML = '';
-        users.forEach(user => {
-            if (user.username !== currentUsername) {
-                const div = document.createElement('div');
-                div.className = 'user-online';
-                div.innerHTML = `<span class="status-dot"></span><span>${escapeHtml(user.username)} (${user.country})</span>`;
-                div.onclick = () => openPrivateChat(user.username);
-                usersListDiv.appendChild(div);
+        const containers = [document.getElementById('usersList'), document.getElementById('usersList2')];
+        containers.forEach(container => {
+            if (!container) return;
+            container.innerHTML = '';
+            users.forEach(user => {
+                if (user.username !== currentUsername) {
+                    const div = document.createElement('div');
+                    div.className = 'user-online';
+                    div.innerHTML = `<span class="status-dot"></span><span>${escapeHtml(user.username)} (${user.country})</span>`;
+                    div.onclick = () => openPrivateChat(user.username);
+                    container.appendChild(div);
+                }
+            });
+        });
+    }
+    
+    function updateCoins(coins) {
+        const spans = [document.getElementById('myCoins'), document.getElementById('myCoins2')];
+        spans.forEach(span => { if(span) span.innerText = coins; });
+    }
+    
+    function updateMyName(name) {
+        const elms = [document.getElementById('myName'), document.getElementById('myName2')];
+        elms.forEach(el => { if(el) el.innerText = name; });
+    }
+    
+    // WebRTC Videollamada
+    const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+    
+    async function startCall(targetUser, durationMinutes, isPrivate = false) {
+        socket.emit('check call cost', { durationMinutes }, async (res) => {
+            if (!res || !res.canAfford) {
+                alert(`Necesitas ${res?.cost || 1.5} monedas para llamar ${durationMinutes} minutos`);
+                return;
+            }
+            
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                showCallUI(durationMinutes, true, targetUser);
+                
+                peerConnection = new RTCPeerConnection(configuration);
+                localStream.getTracks().forEach(track => {
+                    peerConnection.addTrack(track, localStream);
+                });
+                
+                peerConnection.onicecandidate = (event) => {
+                    if (event.candidate) {
+                        socket.emit('ice-candidate', { candidate: event.candidate, targetUser });
+                    }
+                };
+                
+                peerConnection.ontrack = (event) => {
+                    const remoteVideo = document.getElementById('remoteVideo');
+                    if (remoteVideo && event.streams[0]) {
+                        remoteVideo.srcObject = event.streams[0];
+                    }
+                };
+                
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+                
+                socket.emit('call-offer', { offer, targetUser, durationMinutes });
+                
+            } catch (err) {
+                console.error('Error al iniciar llamada:', err);
+                alert('No se pudo acceder a cámara/micrófono. Por favor permite los permisos.');
             }
         });
     }
-
-    // Videollamada simulada con cámara real
-    async function startCall(targetUser, durationMinutes, fromIncoming = false) {
-        if (!fromIncoming) {
-            socket.emit('start call', { targetUsername: targetUser, durationMinutes }, (res) => {
-                if (!res.success) { alert(res.error); return; }
-                alert(res.message);
-                showCallUI(durationMinutes, true);
-            });
-        } else {
-            showCallUI(durationMinutes, true);
-        }
-    }
-
-    function showCallUI(durationMinutes, isCaller) {
+    
+    function showCallUI(durationMinutes, isCaller, otherUser) {
+        const existingOverlay = document.querySelector('.call-overlay');
+        if (existingOverlay) existingOverlay.remove();
+        
         const overlay = document.createElement('div');
         overlay.className = 'call-overlay';
         overlay.innerHTML = `
-            <div style="background:#222; border-radius:20px; padding:20px; text-align:center; max-width:90%">
-                <h2 style="color:white">📹 Videollamada</h2>
-                <div id="localVideoContainer" style="margin-bottom:10px;"><video id="localVideo" autoplay muted playsinline style="width:100%; max-width:400px; border-radius:16px;"></video></div>
-                <div id="remoteVideoContainer" style="margin-bottom:10px;"><video id="remoteVideo" autoplay playsinline style="width:100%; max-width:400px; border-radius:16px;"></video></div>
-                <div class="call-controls">
-                    <button id="endCallBtn" style="background:#ef4444; padding:8px 20px; border:none; border-radius:40px; color:white; cursor:pointer;">Colgar</button>
-                    <span id="timerLabel" style="color:white; margin-left:10px;">Duración: 0:00 / ${durationMinutes}:00</span>
+            <div class="call-container">
+                <div class="videos-container">
+                    <div class="video-wrapper">
+                        <video id="localVideo" autoplay muted playsinline></video>
+                        <div class="video-label">Tú</div>
+                    </div>
+                    <div class="video-wrapper">
+                        <video id="remoteVideo" autoplay playsinline></video>
+                        <div class="video-label">${escapeHtml(otherUser || 'Esperando...')}</div>
+                    </div>
                 </div>
+                <div class="call-controls">
+                    <button id="endCallBtn" class="end-call-btn">📞 Colgar</button>
+                </div>
+                <div class="timer" id="timerLabel">Duración: 0:00 / ${durationMinutes}:00</div>
             </div>
         `;
         document.body.appendChild(overlay);
-        let stream = null;
-        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-            .then(s => {
-                stream = s;
-                const localVideo = document.getElementById('localVideo');
-                if (localVideo) localVideo.srcObject = stream;
-                // Simulación: para la otra persona deberíamos recibir su stream, pero como no implementamos WebRTC completo, mostramos un mensaje.
-                const remoteVideo = document.getElementById('remoteVideo');
-                if (remoteVideo && !isCaller) remoteVideo.style.display = 'none';
-                else if (remoteVideo) remoteVideo.style.display = 'none';
-                addSystemMessage(`📹 Llamada iniciada. Duración: ${durationMinutes} min. Se gastaron ${Math.ceil(durationMinutes/2)*1.5} monedas.`);
-            })
-            .catch(err => { alert('No se pudo acceder a la cámara/micrófono'); overlay.remove(); });
+        
+        if (localStream) {
+            const localVideo = document.getElementById('localVideo');
+            if (localVideo) localVideo.srcObject = localStream;
+        }
+        
         let timeLeft = durationMinutes * 60;
         const timerInterval = setInterval(() => {
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
-                if (stream) stream.getTracks().forEach(t => t.stop());
-                overlay.remove();
-                addSystemMessage('📹 Llamada finalizada.');
+                if (activeCall) endCall();
             } else {
                 timeLeft--;
                 const minutes = Math.floor(timeLeft / 60);
@@ -400,36 +677,116 @@
                 if (timerSpan) timerSpan.innerText = `Duración: ${minutes}:${seconds.toString().padStart(2,'0')} / ${durationMinutes}:00`;
             }
         }, 1000);
-        document.getElementById('endCallBtn').onclick = () => {
-            clearInterval(timerInterval);
-            if (stream) stream.getTracks().forEach(t => t.stop());
-            overlay.remove();
-            addSystemMessage('📹 Llamada finalizada manualmente.');
-        };
+        
+        const endBtn = document.getElementById('endCallBtn');
+        if(endBtn) {
+            endBtn.onclick = () => {
+                clearInterval(timerInterval);
+                endCall();
+            };
+        }
+        
+        activeCall = { timerInterval, otherUser };
     }
-
-    // Escuchar eventos de llamada entrante
-    socket.on('incoming call', ({ from, durationMinutes, cost }) => {
-        if (confirm(`${from} te llama por ${durationMinutes} min. ¿Aceptar?`)) {
-            socket.emit('accept call', { fromUsername: from });
-            showCallUI(durationMinutes, false);
-        } else {
-            socket.emit('reject call', { fromUsername: from });
+    
+    function endCall() {
+        if (activeCall?.timerInterval) clearInterval(activeCall.timerInterval);
+        if (peerConnection) {
+            peerConnection.close();
+            peerConnection = null;
+        }
+        if (localStream) {
+            localStream.getTracks().forEach(track => track.stop());
+            localStream = null;
+        }
+        const overlay = document.querySelector('.call-overlay');
+        if (overlay) overlay.remove();
+        socket.emit('end-call');
+        addSystemMessage('📹 Videollamada finalizada');
+        activeCall = null;
+    }
+    
+    // Socket eventos para videollamada
+    socket.on('call-offer', async ({ offer, from, durationMinutes }) => {
+        const accept = confirm(`${from} te llama por ${durationMinutes} minutos. ¿Aceptar?`);
+        if (!accept) {
+            socket.emit('call-reject', { from });
+            return;
+        }
+        
+        try {
+            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            showCallUI(durationMinutes, false, from);
+            
+            peerConnection = new RTCPeerConnection(configuration);
+            localStream.getTracks().forEach(track => {
+                peerConnection.addTrack(track, localStream);
+            });
+            
+            peerConnection.onicecandidate = (event) => {
+                if (event.candidate) {
+                    socket.emit('ice-candidate', { candidate: event.candidate, targetUser: from });
+                }
+            };
+            
+            peerConnection.ontrack = (event) => {
+                const remoteVideo = document.getElementById('remoteVideo');
+                if (remoteVideo && event.streams[0]) {
+                    remoteVideo.srcObject = event.streams[0];
+                }
+            };
+            
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            socket.emit('call-answer', { answer, to: from });
+            
+        } catch (err) {
+            console.error('Error al aceptar llamada:', err);
+            alert('No se pudo acceder a cámara/micrófono');
         }
     });
-
-    socket.on('call accepted', ({ message }) => alert(message));
-    socket.on('call rejected', ({ message }) => alert(message));
-    socket.on('call started', ({ withUser }) => alert(`Llamada iniciada con ${withUser}`));
-
-    // Chat privado (con input que se limpia después de enviar)
+    
+    socket.on('call-answer', async ({ answer }) => {
+        if (peerConnection) {
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+        }
+    });
+    
+    socket.on('ice-candidate', async ({ candidate }) => {
+        if (peerConnection) {
+            try {
+                await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+            } catch (err) {
+                console.error('Error al agregar ICE candidate:', err);
+            }
+        }
+    });
+    
+    socket.on('call-reject', ({ from }) => {
+        alert(`${from} rechazó la llamada`);
+        endCall();
+    });
+    
+    socket.on('call-ended', () => {
+        addSystemMessage('📹 La videollamada ha terminado');
+        endCall();
+    });
+    
+    socket.on('coins update', updateCoins);
+    
+    // Chat privado con botón enviar funcional y videollamada
     function openPrivateChat(targetUser) {
         if (targetUser === currentUsername) return;
         if (floatingWindows.has(targetUser)) {
-            floatingWindows.get(targetUser).div.classList.remove('minimized');
-            floatingWindows.get(targetUser).div.style.display = 'flex';
+            const win = floatingWindows.get(targetUser);
+            if(win.div) {
+                win.div.classList.remove('minimized');
+                win.div.style.display = 'flex';
+            }
             return;
         }
+        
         socket.emit('start private chat', { targetUsername: targetUser }, (resp) => {
             if (!resp.success) { alert(resp.error); return; }
             const roomName = resp.roomName;
@@ -442,32 +799,35 @@
                 </div>
                 <div class="floating-messages"></div>
                 <div class="floating-emoji-row"></div>
-                <div class="floating-input-wrapper"><input type="text" placeholder="Mensaje..."><button>Enviar</button></div>
+                <div class="floating-input-wrapper"><input type="text" placeholder="Mensaje..."><button class="send-private-btn">Enviar</button></div>
             `;
             document.body.appendChild(floatingDiv);
             const messagesFloat = floatingDiv.querySelector('.floating-messages');
             const inputFloat = floatingDiv.querySelector('input');
-            const sendFloatBtn = floatingDiv.querySelector('button');
+            const sendFloatBtn = floatingDiv.querySelector('.send-private-btn');
             const minimizeBtn = floatingDiv.querySelector('.minimize-float');
             const closeBtn = floatingDiv.querySelector('.close-float');
             const callPrivateBtn = floatingDiv.querySelector('.call-private-btn');
             const floatEmojiRow = floatingDiv.querySelector('.floating-emoji-row');
+            
             emojis.forEach(emo => {
                 const span = document.createElement('span');
                 span.className = 'emoji-item';
                 span.textContent = emo;
-                span.onclick = () => inputFloat.value += emo;
-                floatEmojiRow.appendChild(span);
+                span.onclick = () => { if(inputFloat) inputFloat.value += emo; };
+                if(floatEmojiRow) floatEmojiRow.appendChild(span);
             });
-            // Drag
+            
             let isDragging = false, offsetX, offsetY;
             const header = floatingDiv.querySelector('.floating-header');
-            header.addEventListener('mousedown', (e) => {
-                isDragging = true;
-                offsetX = e.clientX - floatingDiv.offsetLeft;
-                offsetY = e.clientY - floatingDiv.offsetTop;
-                floatingDiv.style.position = 'fixed';
-            });
+            if(header) {
+                header.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    offsetX = e.clientX - floatingDiv.offsetLeft;
+                    offsetY = e.clientY - floatingDiv.offsetTop;
+                    floatingDiv.style.position = 'fixed';
+                });
+            }
             window.addEventListener('mousemove', (e) => {
                 if (isDragging) {
                     floatingDiv.style.left = (e.clientX - offsetX) + 'px';
@@ -476,43 +836,55 @@
                 }
             });
             window.addEventListener('mouseup', () => isDragging = false);
-            minimizeBtn.onclick = () => floatingDiv.classList.toggle('minimized');
-            closeBtn.onclick = () => {
-                socket.emit('leave private chat', { roomName });
-                floatingDiv.remove();
-                floatingWindows.delete(targetUser);
-                if (floatingDiv.privateHandler) socket.off('private message', floatingDiv.privateHandler);
-            };
-            callPrivateBtn.onclick = () => {
-                const mins = prompt('Duración en minutos (2,4,6...) - Costo: 1.5 monedas/min', '2');
-                if (mins) startCall(targetUser, parseInt(mins));
-            };
-            // Enviar mensaje privado Y LIMPIAR INPUT
+            
+            if(minimizeBtn) minimizeBtn.onclick = () => floatingDiv.classList.toggle('minimized');
+            if(closeBtn) {
+                closeBtn.onclick = () => {
+                    socket.emit('leave private chat', { roomName });
+                    floatingDiv.remove();
+                    floatingWindows.delete(targetUser);
+                    if (floatingDiv.privateHandler) socket.off('private message', floatingDiv.privateHandler);
+                };
+            }
+            if(callPrivateBtn) {
+                callPrivateBtn.onclick = () => {
+                    const mins = prompt('Duración en minutos (2,4,6...)', '2');
+                    if (mins) startCall(targetUser, parseInt(mins), true);
+                };
+            }
+            
             const sendPrivate = () => {
-                const txt = inputFloat.value.trim();
+                const txt = inputFloat ? inputFloat.value.trim() : '';
                 if (!txt) return;
                 socket.emit('chat message', { text: txt, room: roomName });
-                inputFloat.value = '';  // Limpiar el campo después de enviar
+                if(inputFloat) inputFloat.value = '';
             };
-            sendFloatBtn.onclick = sendPrivate;
-            inputFloat.onkeypress = (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendPrivate();
-                }
-            };
+            if(sendFloatBtn) sendFloatBtn.onclick = sendPrivate;
+            if(inputFloat) {
+                inputFloat.onkeypress = (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        sendPrivate();
+                    }
+                };
+            }
+            
             const privateMessageHandler = async (data) => {
                 if (data.username === targetUser || data.username === currentUsername) {
                     const msgDiv = document.createElement('div');
                     msgDiv.className = `message ${data.username === currentUsername ? 'own' : ''}`;
                     let displayText = data.text;
+                    // Traducción automática para mensajes privados también
                     if (data.username !== currentUsername && userLanguage !== (data.originalLang || 'es')) {
                         displayText = await translateText(data.text, userLanguage, data.originalLang || 'es');
                     }
                     msgDiv.innerHTML = `<div class="message-bubble">${escapeHtml(displayText)}</div><div class="message-info"><span>${escapeHtml(data.username)}</span><span>${new Date(data.timestamp).toLocaleTimeString()}</span></div>`;
-                    messagesFloat.appendChild(msgDiv);
-                    messagesFloat.scrollTop = messagesFloat.scrollHeight;
+                    if(messagesFloat) {
+                        messagesFloat.appendChild(msgDiv);
+                        messagesFloat.scrollTop = messagesFloat.scrollHeight;
+                    }
                     playSound();
+                    if (document.hidden) showNotification(data.username, displayText);
                 }
             };
             socket.on('private message', privateMessageHandler);
@@ -520,141 +892,195 @@
             floatingWindows.set(targetUser, { div: floatingDiv, roomName, handler: privateMessageHandler });
         });
     }
-
+    
     function sendTextMessage(text = null) {
-        let msg = text !== null ? text : messageInput.value.trim();
+        let msg = text !== null ? text : (messageInput ? messageInput.value.trim() : '');
         if (!msg) return;
         socket.emit('chat message', { text: msg, room: currentRoom });
-        if (text === null) messageInput.value = '';
+        if (text === null && messageInput) messageInput.value = '';
     }
-
-    function escapeHtml(str) { return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
-
+    
+    function escapeHtml(str) { return String(str).replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
+    
     // Socket events
     socket.on('global history', (msgs) => msgs.forEach(m => addMessageToDOM(m, m.username === currentUsername)));
     socket.on('chat message', (data) => { if (currentRoom === 'global') addMessageToDOM(data, data.username === currentUsername); });
     socket.on('system message', (data) => addSystemMessage(data.text));
     socket.on('user list', updateUsersList);
     socket.on('media posts update', (posts) => { mediaPosts = posts; renderMediaWall(); });
-    socket.on('coins update', (coins) => { myCoinsSpan.innerText = coins; });
-    socket.on('message deleted', (id) => { document.querySelector(`.delete-msg[data-id="${id}"]`)?.closest('.message')?.remove(); });
+    socket.on('message deleted', (id) => { 
+        const msgElement = document.querySelector(`.delete-msg[data-id="${id}"]`);
+        if(msgElement) msgElement.closest('.message')?.remove();
+    });
     socket.on('force logout', (msg) => { alert(msg); localStorage.clear(); location.reload(); });
     socket.on('private chat started', ({ withUser }) => { if (!floatingWindows.has(withUser)) openPrivateChat(withUser); });
-
-    // Subir multimedia
-    uploadMediaBtn.onclick = () => mediaFileInput.click();
-    mediaFileInput.onchange = (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        if (file.type.startsWith('video')) {
-            const video = document.createElement('video');
-            video.preload = 'metadata';
-            video.onloadedmetadata = () => {
-                if (video.duration > 30) { alert('Máximo 30 segundos'); return; }
-                uploadFile(file);
+    
+    if(uploadMediaBtn) {
+        uploadMediaBtn.onclick = () => { if(mediaFileInput) mediaFileInput.click(); };
+    }
+    if(mediaFileInput) {
+        mediaFileInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            if(file.size > 10 * 1024 * 1024) {
+                alert('El archivo es muy grande (máx 10MB)');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const mediaType = file.type.startsWith('image') ? 'image' : 'video';
+                socket.emit('media message', { mediaType, content: ev.target.result });
             };
-            video.src = URL.createObjectURL(file);
-        } else uploadFile(file);
-    };
-    function uploadFile(file) {
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            const mediaType = file.type.startsWith('image') ? 'image' : 'video';
-            socket.emit('media message', { mediaType, content: ev.target.result });
+            reader.readAsDataURL(file);
+            mediaFileInput.value = '';
         };
-        reader.readAsDataURL(file);
-        mediaFileInput.value = '';
     }
-
+    
     // Solicitar monedas
-    requestCoinsBtn.onclick = () => {
-        const amount = prompt('¿Cuántas monedas necesitas? (máx 12)', '3');
-        if (amount && !isNaN(amount) && amount >= 1 && amount <= 12) {
-            socket.emit('request coins', { amount: parseInt(amount), message: 'Solicitud de monedas' });
-            alert('Solicitud enviada al administrador');
+    const requestCoinsBtns = document.querySelectorAll('#requestCoinsBtn, #requestCoinsBtn2');
+    requestCoinsBtns.forEach(btn => {
+        if(btn) {
+            btn.onclick = () => {
+                const amount = prompt('¿Cuántas monedas necesitas? (máx 12)', '3');
+                if (amount && !isNaN(amount) && amount >= 1 && amount <= 12) {
+                    socket.emit('request coins', { amount: parseInt(amount), message: 'Solicitud de monedas' });
+                    alert('Solicitud enviada al administrador');
+                } else if(amount) {
+                    alert('Cantidad inválida. Debe ser entre 1 y 12');
+                }
+            };
         }
-    };
-
-    // ADMIN LOGIN (mismo código de antes)
-    adminLoginBtn.onclick = () => {
-        const pwd = prompt('Contraseña de administrador:');
-        if (pwd) {
-            socket.emit('admin login', pwd, (success) => {
-                if (success) {
-                    isAdmin = true;
-                    adminPanelDiv.style.display = 'block';
-                    adminPanelDiv.innerHTML = `
-                        <div style="display:flex; justify-content:space-between;"><h4>Panel Admin</h4><button id="closeAdminBtn">✖</button></div>
-                        <div id="adminRequestsList"></div>
-                        <h5>Dar monedas</h5>
-                        <input type="text" id="adminGiveUser" placeholder="Nombre usuario">
-                        <input type="number" id="adminGiveAmount" min="1" max="12" placeholder="Cantidad">
-                        <button id="adminGiveCoinsBtn">Dar</button>
-                        <h5>Bloquear/Desbloquear</h5>
-                        <input type="text" id="adminBlockUser" placeholder="Nombre usuario">
-                        <button id="adminBlockBtn">Bloquear</button>
-                        <button id="adminUnblockBtn">Desbloquear</button>
-                    `;
-                    document.getElementById('closeAdminBtn').onclick = () => { adminPanelDiv.style.display = 'none'; isAdmin = false; };
-                    document.getElementById('adminGiveCoinsBtn').onclick = () => {
-                        const target = document.getElementById('adminGiveUser').value.trim();
-                        const amount = parseInt(document.getElementById('adminGiveAmount').value);
-                        if (target && amount) socket.emit('admin give coins', { targetUsername: target, amount }, (res) => alert(res.success ? 'Monedas enviadas' : res.error));
-                        else alert('Ingresa nombre y cantidad');
-                    };
-                    document.getElementById('adminBlockBtn').onclick = () => {
-                        const user = document.getElementById('adminBlockUser').value.trim();
-                        if (user) socket.emit('admin toggle block', { targetUsername: user, block: true }, (res) => alert(res.success ? 'Bloqueado' : res.error));
-                    };
-                    document.getElementById('adminUnblockBtn').onclick = () => {
-                        const user = document.getElementById('adminBlockUser').value.trim();
-                        if (user) socket.emit('admin toggle block', { targetUsername: user, block: false }, (res) => alert(res.success ? 'Desbloqueado' : res.error));
-                    };
-                    socket.emit('admin pending requests', (requests) => updateAdminRequests(requests));
-                    socket.on('admin pending requests', (requests) => updateAdminRequests(requests));
-                    socket.on('new coin request', () => socket.emit('admin pending requests', (r) => updateAdminRequests(r)));
-                } else alert('Contraseña incorrecta');
-            });
+    });
+    
+    // Cambiar idioma
+    const changeLangBtns = document.querySelectorAll('#changeLangBtn, #changeLangBtn2');
+    changeLangBtns.forEach(btn => {
+        if(btn) {
+            btn.onclick = () => {
+                const langOptions = Object.keys(translations).join(', ');
+                const newLang = prompt(`Código de idioma (${langOptions}):`, userLanguage);
+                if (newLang && translations[newLang]) {
+                    userLanguage = newLang;
+                    applyUILanguage(newLang);
+                    addSystemMessage(`Idioma cambiado a ${newLang}. Los mensajes se traducirán automáticamente.`);
+                    if(messagesContainer) messagesContainer.innerHTML = '';
+                    socket.emit('global history', (msgs) => msgs.forEach(m => addMessageToDOM(m, m.username === currentUsername)));
+                } else if(newLang) {
+                    alert('Idioma no soportado. Usa: es, en, fr, de, pt, it, zh, ja');
+                }
+            };
         }
-    };
-    function updateAdminRequests(requests) {
-        const container = document.getElementById('adminRequestsList');
-        if (!container) return;
-        container.innerHTML = '';
-        if (!requests || requests.length === 0) { container.innerHTML = '<div>No hay solicitudes</div>'; return; }
-        requests.forEach((req, idx) => {
-            const div = document.createElement('div');
-            div.innerHTML = `${req.from} pide ${req.amount} monedas <button class="admin-give-req" data-idx="${idx}">Dar</button> <button class="admin-deny-req" data-idx="${idx}">Denegar</button>`;
-            container.appendChild(div);
-        });
-        document.querySelectorAll('.admin-give-req').forEach(btn => btn.onclick = () => socket.emit('admin resolve request', { requestIndex: parseInt(btn.dataset.idx), giveCoins: true }));
-        document.querySelectorAll('.admin-deny-req').forEach(btn => btn.onclick = () => socket.emit('admin resolve request', { requestIndex: parseInt(btn.dataset.idx), giveCoins: false }));
+    });
+    
+    if(sendBtn) sendBtn.onclick = () => sendTextMessage();
+    if(messageInput) {
+        messageInput.onkeypress = (e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendTextMessage(); } };
     }
-
-    // Cambiar idioma (interfaz y mensajes)
-    changeLangBtn.onclick = () => {
-        const newLang = prompt('Código de idioma (es, en, fr, de, pt, it, zh, ja):', userLanguage);
-        if (newLang && translations[newLang]) {
-            userLanguage = newLang;
-            applyUILanguage(newLang);
-            addSystemMessage(`Idioma cambiado a ${newLang}. Los mensajes se traducirán automáticamente.`);
-            messagesContainer.innerHTML = '';
-            socket.emit('global history', (msgs) => msgs.forEach(m => addMessageToDOM(m, m.username === currentUsername)));
-        } else alert('Idioma no soportado');
-    };
-
-    sendBtn.onclick = () => sendTextMessage();
-    messageInput.onkeypress = (e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendTextMessage(); } };
-    messagesContainer.onscroll = () => { autoScroll = messagesContainer.scrollHeight - messagesContainer.clientHeight <= messagesContainer.scrollTop + 80; };
-    logoutBtn.onclick = () => { socket.emit('logout'); localStorage.clear(); location.reload(); };
-    callGlobalBtn.onclick = () => {
-        const target = prompt('¿A quién llamar? (nombre de usuario)');
-        if (!target) return;
-        const mins = prompt('Duración en minutos (2,4,6...) - Costo: 1.5 mon/min', '2');
-        if (mins) startCall(target, parseInt(mins));
-    };
-
-    // Inicio de sesión
+    if(messagesContainer) {
+        messagesContainer.onscroll = () => { autoScroll = messagesContainer.scrollHeight - messagesContainer.clientHeight <= messagesContainer.scrollTop + 80; };
+    }
+    
+    const logoutBtns = document.querySelectorAll('#logoutBtn, #logoutBtn2');
+    logoutBtns.forEach(btn => {
+        if(btn) {
+            btn.onclick = () => { 
+                if(peerConnection) endCall();
+                socket.emit('logout'); 
+                localStorage.clear(); 
+                location.reload(); 
+            };
+        }
+    });
+    
+    if(callGlobalBtn) {
+        callGlobalBtn.onclick = () => {
+            const target = prompt('¿A quién llamar? (nombre de usuario)');
+            if (!target) return;
+            const mins = prompt('Duración en minutos (2,4,6...)', '2');
+            if (mins && !isNaN(mins) && mins > 0) startCall(target, parseInt(mins));
+        };
+    }
+    
+    // Admin login
+    const adminBtns = document.querySelectorAll('#adminLoginBtn, #adminLoginBtn2');
+    adminBtns.forEach(btn => {
+        if(btn) {
+            btn.onclick = () => {
+                const pwd = prompt('Contraseña de administrador:');
+                if (pwd) {
+                    socket.emit('admin login', pwd, (success) => {
+                        if (success) {
+                            isAdmin = true;
+                            const adminDivs = document.querySelectorAll('#adminPanel, #adminPanel2');
+                            adminDivs.forEach(div => {
+                                if(div) {
+                                    div.style.display = 'block';
+                                    div.innerHTML = `
+                                        <div style="display:flex; justify-content:space-between;"><h4>Panel Admin</h4><button class="closeAdminBtn">✖</button></div>
+                                        <div id="adminRequestsList"></div>
+                                        <h5>Dar monedas</h5>
+                                        <input type="text" id="adminGiveUser" placeholder="Nombre usuario">
+                                        <input type="number" id="adminGiveAmount" min="1" max="12" placeholder="Cantidad">
+                                        <button id="adminGiveCoinsBtn">Dar</button>
+                                        <h5>Bloquear/Desbloquear</h5>
+                                        <input type="text" id="adminBlockUser" placeholder="Nombre usuario">
+                                        <button id="adminBlockBtn">Bloquear</button>
+                                        <button id="adminUnblockBtn">Desbloquear</button>
+                                    `;
+                                }
+                            });
+                            document.querySelectorAll('.closeAdminBtn').forEach(btnClose => {
+                                btnClose.onclick = () => {
+                                    document.querySelectorAll('#adminPanel, #adminPanel2').forEach(d => { if(d) d.style.display = 'none'; });
+                                    isAdmin = false;
+                                };
+                            });
+                            document.querySelectorAll('#adminGiveCoinsBtn').forEach(giveBtn => {
+                                giveBtn.onclick = () => {
+                                    const target = document.getElementById('adminGiveUser')?.value.trim();
+                                    const amount = parseInt(document.getElementById('adminGiveAmount')?.value);
+                                    if (target && amount) socket.emit('admin give coins', { targetUsername: target, amount }, (res) => alert(res.success ? 'Monedas enviadas' : res.error));
+                                    else alert('Ingresa nombre y cantidad');
+                                };
+                            });
+                            document.querySelectorAll('#adminBlockBtn').forEach(blockBtn => {
+                                blockBtn.onclick = () => {
+                                    const user = document.getElementById('adminBlockUser')?.value.trim();
+                                    if (user) socket.emit('admin toggle block', { targetUsername: user, block: true }, (res) => alert(res.success ? 'Bloqueado' : res.error));
+                                };
+                            });
+                            document.querySelectorAll('#adminUnblockBtn').forEach(unblockBtn => {
+                                unblockBtn.onclick = () => {
+                                    const user = document.getElementById('adminBlockUser')?.value.trim();
+                                    if (user) socket.emit('admin toggle block', { targetUsername: user, block: false }, (res) => alert(res.success ? 'Desbloqueado' : res.error));
+                                };
+                            });
+                            socket.emit('admin pending requests', (requests) => updateAdminRequests(requests));
+                            socket.on('admin pending requests', (requests) => updateAdminRequests(requests));
+                            socket.on('new coin request', () => socket.emit('admin pending requests', (r) => updateAdminRequests(r)));
+                        } else alert('Contraseña incorrecta');
+                    });
+                }
+            };
+        }
+    });
+    
+    function updateAdminRequests(requests) {
+        const containers = document.querySelectorAll('#adminRequestsList');
+        containers.forEach(container => {
+            if (!container) return;
+            container.innerHTML = '';
+            if (!requests || requests.length === 0) { container.innerHTML = '<div>No hay solicitudes</div>'; return; }
+            requests.forEach((req, idx) => {
+                const div = document.createElement('div');
+                div.innerHTML = `${req.from} pide ${req.amount} monedas <button class="admin-give-req" data-idx="${idx}">Dar</button> <button class="admin-deny-req" data-idx="${idx}">Denegar</button>`;
+                container.appendChild(div);
+            });
+            document.querySelectorAll('.admin-give-req').forEach(btn => btn.onclick = () => socket.emit('admin resolve request', { requestIndex: parseInt(btn.dataset.idx), giveCoins: true }));
+            document.querySelectorAll('.admin-deny-req').forEach(btn => btn.onclick = () => socket.emit('admin resolve request', { requestIndex: parseInt(btn.dataset.idx), giveCoins: false }));
+        });
+    }
+    
     function joinChat(username, lang, country) {
         socket.emit('set username', { username, language: lang, country }, (success, data) => {
             if (success) {
@@ -664,14 +1090,17 @@
                 localStorage.setItem('miluchat_user', username);
                 localStorage.setItem('miluchat_lang', lang);
                 localStorage.setItem('miluchat_country', country);
-                welcomeDiv.style.display = 'none';
-                chatDiv.style.display = 'flex';
-                myCoinsSpan.innerText = data.coins;
-                myNameSpan.innerText = username;
+                if(welcomeDiv) welcomeDiv.style.display = 'none';
+                if(chatDiv) chatDiv.style.display = 'flex';
+                updateCoins(data.coins);
+                updateMyName(username);
                 addSystemMessage(`✨ Bienvenido ${username}. Tienes ${data.coins} monedas.`);
-            } else errorMsg.innerText = data;
+            } else if(errorMsg) {
+                errorMsg.innerText = data;
+            }
         });
     }
+    
     const savedLang = localStorage.getItem('miluchat_lang');
     if (savedLang && translations[savedLang]) applyUILanguage(savedLang);
     else applyUILanguage('es');
@@ -679,18 +1108,20 @@
     if (savedUser) {
         userLanguage = localStorage.getItem('miluchat_lang') || 'es';
         userCountry = localStorage.getItem('miluchat_country') || 'COL';
-        languageSelect.value = userLanguage;
-        countrySelect.value = userCountry;
+        if(languageSelect) languageSelect.value = userLanguage;
+        if(countrySelect) countrySelect.value = userCountry;
         joinChat(savedUser, userLanguage, userCountry);
     }
-    joinBtn.onclick = () => {
-        const name = usernameInput.value.trim();
-        const lang = languageSelect.value;
-        const country = countrySelect.value;
-        if (name && acceptTermsCheck.checked) joinChat(name, lang, country);
-        else if (!acceptTermsCheck.checked) errorMsg.innerText = 'Acepta los términos';
-        else errorMsg.innerText = 'Ingresa un nombre';
-    };
+    if(joinBtn) {
+        joinBtn.onclick = () => {
+            const name = usernameInput ? usernameInput.value.trim() : '';
+            const lang = languageSelect ? languageSelect.value : 'es';
+            const country = countrySelect ? countrySelect.value : 'COL';
+            if (name && acceptTermsCheck && acceptTermsCheck.checked) joinChat(name, lang, country);
+            else if (acceptTermsCheck && !acceptTermsCheck.checked && errorMsg) errorMsg.innerText = 'Acepta los términos';
+            else if (!name && errorMsg) errorMsg.innerText = 'Ingresa un nombre';
+        };
+    }
 </script>
 </body>
 </html>
