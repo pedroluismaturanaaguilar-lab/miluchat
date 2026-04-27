@@ -20,8 +20,10 @@
             --danger: #ef4444;
             --success: #22c55e;
             --warning: #f59e0b;
+            --male-color: #3b82f6;
+            --female-color: #ec4898;
         }
-        body { background: var(--bg-dark); height: 100vh; display: flex; justify-content: center; align-items: center; margin: 0; padding: 0; overflow: hidden; }
+        body { background: var(--bg-dark); height: 100vh; display: flex; justify-content: center; align-items: center; margin: 0; padding: 0; overflow: hidden; -webkit-tap-highlight-color: transparent; }
         
         .welcome-screen {
             background: var(--bg-sidebar);
@@ -41,31 +43,76 @@
             background: var(--bg-chat);
             color: var(--text-primary);
             font-size: 16px;
+            -webkit-appearance: none;
+            appearance: none;
         }
         .welcome-screen button { background: var(--accent); cursor: pointer; font-weight: bold; transition: background 0.2s; }
-        .terms-box { font-size: 0.75rem; margin: 10px 0; text-align: left; max-height: 130px; overflow-y: auto; background: var(--bg-chat); padding: 8px; border-radius: 12px; }
+        .gender-options {
+            display: flex;
+            gap: 12px;
+            margin: 10px 0;
+        }
+        .gender-option {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            background: var(--bg-chat);
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+        .gender-option.selected {
+            border-color: var(--accent);
+            background: var(--accent);
+        }
+        .gender-option.male.selected { background: var(--male-color); }
+        .gender-option.female.selected { background: var(--female-color); }
+        .gender-icon { font-size: 24px; display: block; }
+        
+        .terms-box { font-size: 0.75rem; margin: 10px 0; text-align: left; max-height: 130px; overflow-y: auto; background: var(--bg-chat); padding: 8px; border-radius: 12px; -webkit-overflow-scrolling: touch; }
         
         .chat-app { display: none; width: 100%; height: 100vh; background: var(--bg-sidebar); position: fixed; top: 0; left: 0; }
         .app-grid { display: grid; grid-template-columns: 260px 1fr 260px; height: 100%; transition: all 0.3s; }
         
-        .left-panel { background: #1a1e24; border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
+        .left-panel { background: #1a1e24; border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; -webkit-overflow-scrolling: touch; }
         .my-info { padding: 16px; text-align: center; border-bottom: 1px solid var(--border); }
         .my-coins { font-size: 1.4rem; color: gold; margin: 8px 0; }
+        .user-name-with-gender {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .gender-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .gender-badge.male { background: var(--male-color); color: white; }
+        .gender-badge.female { background: var(--female-color); color: white; }
+        
         .btn-sm { background: var(--warning); border: none; padding: 8px; border-radius: 40px; color: white; cursor: pointer; width: 100%; margin-top: 6px; font-size: 14px; }
         .online-users { padding: 12px; }
         .user-online { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 40px; background: var(--bg-chat); margin: 6px 0; cursor: pointer; }
         .status-dot { width: 10px; height: 10px; background: #22c55e; border-radius: 50%; display: inline-block; }
+        .user-gender-icon { font-size: 14px; margin-left: 4px; }
         
         .center-area { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); overflow: hidden; }
         .chat-column, .wall-column { background: var(--bg-chat); display: flex; flex-direction: column; overflow: hidden; }
         .chat-header { padding: 12px; background: var(--bg-sidebar); border-bottom: 1px solid var(--border); font-weight: bold; }
-        .messages-container { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+        .messages-container { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; -webkit-overflow-scrolling: touch; }
         
-        .emoji-row { display: flex; gap: 6px; padding: 6px 12px; background: var(--bg-sidebar); overflow-x: auto; }
+        .emoji-row { display: flex; gap: 6px; padding: 6px 12px; background: var(--bg-sidebar); overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .emoji-item { font-size: 1.2rem; cursor: pointer; padding: 4px; }
         
         .input-fixed { padding: 8px 12px; background: var(--bg-sidebar); display: flex; gap: 8px; border-top: 1px solid var(--border); flex-wrap: wrap; }
-        .input-fixed textarea { flex: 1; border: none; border-radius: 20px; padding: 10px; background: var(--bg-chat); color: var(--text-primary); resize: none; font-size: 16px; min-width: 120px; }
+        .input-fixed textarea { flex: 1; border: none; border-radius: 20px; padding: 10px; background: var(--bg-chat); color: var(--text-primary); resize: none; font-size: 16px; min-width: 120px; font-family: inherit; }
         .input-fixed button { background: var(--accent); border: none; padding: 10px 16px; border-radius: 20px; color: white; cursor: pointer; font-weight: bold; }
         .audio-btn { background: #8b5cf6 !important; }
         .audio-btn.recording { background: #ef4444 !important; animation: pulse 1s infinite; }
@@ -76,7 +123,7 @@
             100% { transform: scale(1); opacity: 1; }
         }
         
-        .media-wall { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+        .media-wall { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; -webkit-overflow-scrolling: touch; }
         .media-post { background: var(--bg-sidebar); border-radius: 16px; padding: 8px; }
         .media-post img, .media-post video { max-width: 100%; border-radius: 12px; max-height: 200px; width: auto; }
         
@@ -84,8 +131,13 @@
         .message.own { align-self: flex-end; }
         .message-bubble { padding: 8px 14px; border-radius: 18px; background: var(--bubble-other); color: var(--text-primary); word-break: break-word; font-size: 15px; }
         .message.own .message-bubble { background: var(--bubble-own); }
-        .message-info { font-size: 0.65rem; color: #8a98a9; margin: 2px 8px 0; display: flex; justify-content: space-between; align-items: center; }
-        .delete-msg { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 0.7rem; margin-left: 8px; }
+        .message-info { font-size: 0.65rem; color: #8a98a9; margin: 2px 8px 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px; }
+        .message-username {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .delete-msg { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 0.7rem; margin-left: 8px; padding: 2px 4px; }
         .system-message { text-align: center; font-size: 0.7rem; background: #2a2f38; padding: 4px; border-radius: 20px; width: fit-content; margin: 4px auto; color: #8a98a9; }
         .audio-message { display: flex; align-items: center; gap: 10px; }
         .audio-play-btn { background: var(--accent); border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; font-size: 16px; }
@@ -93,15 +145,15 @@
         .floating-chat { position: fixed; bottom: 20px; right: 20px; width: 340px; height: 480px; background: var(--bg-sidebar); border-radius: 16px; display: flex; flex-direction: column; z-index: 1000; border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .floating-header { background: var(--accent); padding: 10px; border-radius: 16px 16px 0 0; display: flex; justify-content: space-between; cursor: move; color: white; }
         .floating-header button { background: none; border: none; color: white; cursor: pointer; font-size: 16px; padding: 0 5px; }
-        .floating-messages { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 8px; }
-        .floating-emoji-row { display: flex; gap: 6px; padding: 6px; overflow-x: auto; background: var(--bg-sidebar); }
+        .floating-messages { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 8px; -webkit-overflow-scrolling: touch; }
+        .floating-emoji-row { display: flex; gap: 6px; padding: 6px; overflow-x: auto; background: var(--bg-sidebar); -webkit-overflow-scrolling: touch; }
         .floating-input-wrapper { display: flex; gap: 6px; padding: 6px; background: var(--bg-sidebar); flex-wrap: wrap; }
-        .floating-input-wrapper input { flex: 1; padding: 10px; border-radius: 20px; border: none; background: var(--bg-chat); color: var(--text-primary); font-size: 14px; min-width: 100px; }
+        .floating-input-wrapper input { flex: 1; padding: 10px; border-radius: 20px; border: none; background: var(--bg-chat); color: var(--text-primary); font-size: 14px; min-width: 100px; font-family: inherit; }
         .floating-input-wrapper button { background: var(--accent); border: none; padding: 8px 12px; border-radius: 20px; color: white; cursor: pointer; }
         .minimized { height: 45px !important; }
         .minimized .floating-messages, .minimized .floating-emoji-row, .minimized .floating-input-wrapper { display: none; }
         
-        .right-panel { background: var(--bg-sidebar); border-left: 1px solid var(--border); padding: 12px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
+        .right-panel { background: var(--bg-sidebar); border-left: 1px solid var(--border); padding: 12px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
         .admin-panel { background: #1e293b; border-radius: 12px; padding: 12px; margin-top: 12px; }
         
         .call-overlay {
@@ -212,6 +264,7 @@
             z-index: 1001;
             transition: left 0.3s;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
         .mobile-menu.open { left: 0; }
         
@@ -227,8 +280,6 @@
             .floating-chat { width: 95%; right: 2.5%; left: 2.5%; bottom: 10px; height: 70vh; }
             .videos-container { grid-template-columns: 1fr; }
         }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
         .incoming-call-notification {
             position: fixed;
@@ -259,6 +310,8 @@
         }
         .accept-call { background: var(--success); color: white; }
         .reject-call { background: var(--danger); color: white; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -288,6 +341,16 @@
         <option value="ITA">Italia</option>
         <option value="BRA">Brasil</option>
     </select>
+    <div class="gender-options">
+        <div class="gender-option male" data-gender="male">
+            <span class="gender-icon">👨</span>
+            <span>Hombre</span>
+        </div>
+        <div class="gender-option female" data-gender="female">
+            <span class="gender-icon">👩</span>
+            <span>Mujer</span>
+        </div>
+    </div>
     <input type="text" id="usernameInput" placeholder="Nombre de usuario">
     <div class="terms-box" id="termsBox"></div>
     <label><input type="checkbox" id="acceptTerms"> <span id="acceptTermsLabel">Acepto los términos</span></label>
@@ -303,7 +366,10 @@
     <div class="mobile-menu-overlay" id="mobileOverlay"></div>
     <div class="mobile-menu" id="mobileLeftMenu">
         <div class="my-info">
-            <h3 id="myName">-</h3>
+            <div class="user-name-with-gender">
+                <h3 id="myName">-</h3>
+                <span id="myGenderBadge" class="gender-badge"></span>
+            </div>
             <div class="my-coins">💰 <span id="myCoins">0</span></div>
             <button id="requestCoinsBtn" class="btn-sm">➕ Pedir monedas</button>
             <button id="changeLangBtn" class="btn-sm">🌐 Cambiar idioma</button>
@@ -325,7 +391,10 @@
     <div class="app-grid">
         <div class="left-panel">
             <div class="my-info">
-                <h3 id="myName2">-</h3>
+                <div class="user-name-with-gender">
+                    <h3 id="myName2">-</h3>
+                    <span id="myGenderBadge2" class="gender-badge"></span>
+                </div>
                 <div class="my-coins">💰 <span id="myCoins2">0</span></div>
                 <button id="requestCoinsBtn2" class="btn-sm">➕ Pedir monedas</button>
                 <button id="changeLangBtn2" class="btn-sm">🌐 Cambiar idioma</button>
@@ -358,7 +427,10 @@
         </div>
         <div class="right-panel">
             <div class="my-info" style="padding:12px;">
-                <h3 id="myNamePC">-</h3>
+                <div class="user-name-with-gender">
+                    <h3 id="myNamePC">-</h3>
+                    <span id="myGenderBadgePC" class="gender-badge"></span>
+                </div>
                 <div class="my-coins">💰 <span id="myCoinsPC">0</span></div>
             </div>
             <button id="logoutBtn2" style="background:#ef4444; padding:8px; border-radius:12px; border:none; color:white;">🚪 Cerrar sesión</button>
@@ -382,6 +454,7 @@
     
     let userLanguage = 'es';
     let currentUsername = null;
+    let currentGender = null;
     let currentRoom = "global";
     let autoScroll = true;
     let floatingWindows = new Map();
@@ -390,8 +463,9 @@
     let isAdmin = false;
     let peerConnection = null;
     let localStream = null;
-    let currentCall = null;
     let callEnded = false;
+    let isInCall = false;
+    let callTimerInterval = null;
     const translationCache = new Map();
     
     // Audio recording
@@ -400,6 +474,17 @@
     let isRecording = false;
     
     const socket = io();
+    
+    // Selección de género
+    let selectedGender = null;
+    const genderOptions = document.querySelectorAll('.gender-option');
+    genderOptions.forEach(option => {
+        option.onclick = () => {
+            genderOptions.forEach(opt => opt.classList.remove('selected'));
+            option.classList.add('selected');
+            selectedGender = option.dataset.gender;
+        };
+    });
     
     function applyUILanguage(lang) {
         const t = translations[lang] || translations.es;
@@ -427,6 +512,34 @@
         document.querySelectorAll('.chat-header').forEach((el, i) => { if(el && i === 0) el.innerText = t.globalChat; if(el && i === 1) el.innerText = t.wall; });
         document.querySelectorAll('#logoutBtn, #logoutBtn2, #logoutBtnMobile').forEach(btn => { if(btn) btn.innerText = t.logout; });
         document.querySelectorAll('#adminLoginBtn, #adminLoginBtn2, #adminLoginBtnMobile').forEach(btn => { if(btn) btn.innerText = t.admin; });
+    }
+    
+    function getGenderIcon(gender) {
+        if(gender === 'male') return '👨';
+        if(gender === 'female') return '👩';
+        return '';
+    }
+    
+    function getGenderBadge(gender) {
+        if(gender === 'male') return '<span class="gender-badge male">M</span>';
+        if(gender === 'female') return '<span class="gender-badge female">F</span>';
+        return '';
+    }
+    
+    function updateMyGenderBadge(gender) {
+        const badges = ['myGenderBadge', 'myGenderBadge2', 'myGenderBadgePC'];
+        badges.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) {
+                if(gender === 'male') {
+                    el.textContent = 'M';
+                    el.className = 'gender-badge male';
+                } else if(gender === 'female') {
+                    el.textContent = 'F';
+                    el.className = 'gender-badge female';
+                }
+            }
+        });
     }
     
     async function translateText(text, targetLang, sourceLang = 'es') {
@@ -534,7 +647,10 @@
                 </div>
             </div>
             <div class="message-info">
-                <span>${escapeHtml(data.username)}</span>
+                <div class="message-username">
+                    <span>${escapeHtml(data.username)}</span>
+                    ${getGenderBadge(data.gender)}
+                </div>
                 <span>${new Date(data.timestamp).toLocaleTimeString()}</span>
                 ${isOwn ? `<button class="delete-msg" data-id="${data.id}">🗑️</button>` : ''}
             </div>
@@ -626,7 +742,10 @@
         div.innerHTML = `
             <div class="message-bubble">${escapeHtml(displayText)}</div>
             <div class="message-info">
-                <span>${escapeHtml(data.username)}</span>
+                <div class="message-username">
+                    <span>${escapeHtml(data.username)}</span>
+                    ${getGenderBadge(data.gender)}
+                </div>
                 <span>${new Date(data.timestamp).toLocaleTimeString()}</span>
                 ${isOwn ? `<button class="delete-msg" data-id="${data.id}">🗑️</button>` : ''}
             </div>
@@ -660,7 +779,7 @@
             div.className = 'media-post';
             const mediaHtml = post.type === 'image' ? `<img src="${post.content}" loading="lazy">` : `<video controls src="${post.content}" preload="metadata"></video>`;
             div.innerHTML = `
-                <div><strong>${escapeHtml(post.username)}</strong> <small>${new Date(post.timestamp).toLocaleString()}</small></div>
+                <div><strong>${escapeHtml(post.username)}</strong> ${getGenderBadge(post.gender)} <small>${new Date(post.timestamp).toLocaleString()}</small></div>
                 ${mediaHtml}
                 <div>
                     <button class="like-btn" data-id="${post.id}">❤️ ${post.likes || 0}</button>
@@ -683,7 +802,10 @@
                 if (user.username !== currentUsername) {
                     const div = document.createElement('div');
                     div.className = 'user-online';
-                    div.innerHTML = `<span class="status-dot"></span><span>${escapeHtml(user.username)} (${user.country})</span>`;
+                    div.innerHTML = `
+                        <span class="status-dot"></span>
+                        <span>${escapeHtml(user.username)} ${getGenderIcon(user.gender)} (${user.country})</span>
+                    `;
                     div.onclick = () => openPrivateChat(user.username);
                     container.appendChild(div);
                 }
@@ -707,17 +829,13 @@
         });
     }
     
-    // WebRTC Videollamada CORREGIDA
+    // WebRTC Videollamada
     const configuration = { 
         iceServers: [
             { urls: 'stun:stun.l.google.com:19302' },
             { urls: 'stun:stun1.l.google.com:19302' }
         ] 
     };
-    
-    let callTimerInterval = null;
-    let callStartTime = null;
-    let isInCall = false;
     
     async function startCall(targetUser, durationMinutes) {
         if(isInCall) {
@@ -863,7 +981,6 @@
         }
     }
     
-    // Mostrar notificación de llamada entrante
     function showIncomingCallNotification(from, durationMinutes, acceptCallback, rejectCallback) {
         const notification = document.createElement('div');
         notification.className = 'incoming-call-notification';
@@ -892,7 +1009,7 @@
         }, 30000);
     }
     
-    // Socket eventos para videollamada
+    // Socket eventos
     socket.on('call-offer', async ({ offer, from, durationMinutes }) => {
         if(isInCall) {
             socket.emit('call-reject', { from });
@@ -965,7 +1082,6 @@
     
     socket.on('call-ended', () => {
         if(!callEnded) {
-            addSystemMessage(`📹 La videollamada ha terminado`, false);
             endCall(false);
         }
     });
@@ -1139,7 +1255,16 @@
                     if (data.username !== currentUsername && userLanguage !== (data.originalLang || 'es')) {
                         displayText = await translateText(data.text, userLanguage, data.originalLang || 'es');
                     }
-                    msgDiv.innerHTML = `<div class="message-bubble">${escapeHtml(displayText)}</div><div class="message-info"><span>${escapeHtml(data.username)}</span><span>${new Date(data.timestamp).toLocaleTimeString()}</span></div>`;
+                    msgDiv.innerHTML = `
+                        <div class="message-bubble">${escapeHtml(displayText)}</div>
+                        <div class="message-info">
+                            <div class="message-username">
+                                <span>${escapeHtml(data.username)}</span>
+                                ${getGenderBadge(data.gender)}
+                            </div>
+                            <span>${new Date(data.timestamp).toLocaleTimeString()}</span>
+                        </div>
+                    `;
                     if(messagesFloat) {
                         messagesFloat.appendChild(msgDiv);
                         messagesFloat.scrollTop = messagesFloat.scrollHeight;
@@ -1160,7 +1285,10 @@
                             </div>
                         </div>
                         <div class="message-info">
-                            <span>${escapeHtml(data.username)}</span>
+                            <div class="message-username">
+                                <span>${escapeHtml(data.username)}</span>
+                                ${getGenderBadge(data.gender)}
+                            </div>
                             <span>${new Date(data.timestamp).toLocaleTimeString()}</span>
                         </div>
                     `;
@@ -1460,20 +1588,23 @@
         }
     });
     
-    function joinChat(username, lang, country) {
-        socket.emit('set username', { username, language: lang, country }, (success, data) => {
+    function joinChat(username, lang, country, gender) {
+        socket.emit('set username', { username, language: lang, country, gender }, (success, data) => {
             if (success) {
                 currentUsername = username;
                 userLanguage = lang;
                 userCountry = country;
+                currentGender = gender;
                 localStorage.setItem('miluchat_user', username);
                 localStorage.setItem('miluchat_lang', lang);
                 localStorage.setItem('miluchat_country', country);
+                localStorage.setItem('miluchat_gender', gender);
                 if(welcomeDiv) welcomeDiv.style.display = 'none';
                 if(chatDiv) chatDiv.style.display = 'flex';
                 updateCoins(data.coins);
                 updateMyName(username);
-                addSystemMessage(`✨ Bienvenido ${username}. Tienes ${data.coins} monedas.`, true);
+                updateMyGenderBadge(gender);
+                addSystemMessage(`✨ Bienvenido ${username} ${gender === 'male' ? '👨' : '👩'}. Tienes ${data.coins} monedas.`, true);
             } else if(errorMsg) {
                 errorMsg.innerText = data;
             }
@@ -1487,16 +1618,19 @@
     if (savedUser) {
         userLanguage = localStorage.getItem('miluchat_lang') || 'es';
         userCountry = localStorage.getItem('miluchat_country') || 'COL';
+        currentGender = localStorage.getItem('miluchat_gender') || 'male';
         if(languageSelect) languageSelect.value = userLanguage;
         if(countrySelect) countrySelect.value = userCountry;
-        joinChat(savedUser, userLanguage, userCountry);
+        joinChat(savedUser, userLanguage, userCountry, currentGender);
     }
     if(joinBtn) {
         joinBtn.onclick = () => {
             const name = usernameInput ? usernameInput.value.trim() : '';
             const lang = languageSelect ? languageSelect.value : 'es';
             const country = countrySelect ? countrySelect.value : 'COL';
-            if (name && acceptTermsCheck && acceptTermsCheck.checked) joinChat(name, lang, country);
+            const gender = selectedGender;
+            if (name && gender && acceptTermsCheck && acceptTermsCheck.checked) joinChat(name, lang, country, gender);
+            else if (!gender && errorMsg) errorMsg.innerText = 'Selecciona tu género';
             else if (acceptTermsCheck && !acceptTermsCheck.checked && errorMsg) errorMsg.innerText = 'Acepta los términos';
             else if (!name && errorMsg) errorMsg.innerText = 'Ingresa un nombre';
         };
