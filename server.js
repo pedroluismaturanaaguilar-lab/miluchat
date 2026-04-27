@@ -43,7 +43,7 @@ setInterval(() => {
 io.on('connection', (socket) => {
     console.log(`Conectado: ${socket.id}`);
 
-    socket.on('set username', ({ username, language, country }, callback) => {
+    socket.on('set username', ({ username, language, country, gender }, callback) => {
         if (userData.get(username)?.blocked) {
             callback(false, 'Usuario bloqueado');
             return;
@@ -56,12 +56,13 @@ io.on('connection', (socket) => {
         let initialCoins = visitCount === 0 ? 6 : visitCount === 1 ? 3 : visitCount === 2 ? 1 : 0;
         userVisits.set(username, visitCount + 1);
 
-        users.set(socket.id, { username, coins: initialCoins, language, country });
+        users.set(socket.id, { username, coins: initialCoins, language, country, gender });
         userSockets.set(username, socket.id);
-        userData.set(username, { language, country, blocked: false });
+        userData.set(username, { language, country, blocked: false, gender });
         socket.username = username;
         socket.coins = initialCoins;
         socket.language = language;
+        socket.gender = gender;
         socket.join('global');
 
         callback(true, { coins: initialCoins });
@@ -72,7 +73,7 @@ io.on('connection', (socket) => {
     });
 
     function broadcastUserList() {
-        const list = Array.from(users.values()).map(u => ({ username: u.username, coins: u.coins, language: u.language, country: u.country }));
+        const list = Array.from(users.values()).map(u => ({ username: u.username, coins: u.coins, language: u.language, country: u.country, gender: u.gender }));
         io.emit('user list', list);
     }
 
@@ -85,7 +86,8 @@ io.on('connection', (socket) => {
             username: socket.username,
             text: filtered,
             timestamp: Date.now(),
-            originalLang: socket.language || 'es'
+            originalLang: socket.language || 'es',
+            gender: socket.gender
         };
         if (room && room !== 'global') {
             io.to(room).emit('private message', msg);
@@ -104,7 +106,8 @@ io.on('connection', (socket) => {
             username: socket.username,
             audioData: audioData,
             timestamp: Date.now(),
-            originalLang: socket.language || 'es'
+            originalLang: socket.language || 'es',
+            gender: socket.gender
         };
         if (room && room !== 'global') {
             io.to(room).emit('audio message', msg);
@@ -127,7 +130,8 @@ io.on('connection', (socket) => {
             timestamp: Date.now(),
             expiresAt: expiresAt,
             likes: 0,
-            likedBy: []
+            likedBy: [],
+            gender: socket.gender
         };
         mediaPosts.push(post);
         io.emit('media posts update', mediaPosts);
@@ -136,7 +140,8 @@ io.on('connection', (socket) => {
             type: 'text',
             username: 'Sistema',
             text: `📸 ${socket.username} subió ${mediaType === 'image' ? 'una imagen' : 'un video'}`,
-            timestamp: Date.now()
+            timestamp: Date.now(),
+            gender: socket.gender
         });
     });
 
