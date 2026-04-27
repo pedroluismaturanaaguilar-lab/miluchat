@@ -360,6 +360,12 @@
         .checkbox-green {
             accent-color: var(--success);
         }
+        
+        .translation-badge {
+            font-size: 10px;
+            opacity: 0.6;
+            margin-left: 5px;
+        }
     </style>
 </head>
 <body>
@@ -511,7 +517,6 @@
     <div id="errorMsg" style="color:#ef4444; margin-top:8px; font-size:13px;"></div>
 </div>
 
-<!-- Resto del chat igual que antes pero resumido por longitud -->
 <div id="chatApp" class="chat-app">
     <div class="mobile-header">
         <button class="hamburger-btn" id="hamburgerBtn">☰</button>
@@ -596,7 +601,7 @@
 </div>
 
 <script>
-    // Traducciones completas para la interfaz
+    // Traducciones para la interfaz
     const translations = {
         es: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ Acepto los términos y condiciones", joinBtn:"🚀 Ingresar", requestCoins:"➕ Pedir monedas", changeLang:"🌐 Cambiar idioma", onlineUsers:"📡 En línea", globalChat:"💬 Chat Global", send:"Enviar", call:"📹", wall:"📸 Muro", upload:"📤 Subir", logout:"🚪 Cerrar sesión", admin:"🔐 Admin", usernamePlaceholder:"Nombre de usuario" },
         en: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ I accept the terms and conditions", joinBtn:"🚀 Login", requestCoins:"➕ Request coins", changeLang:"🌐 Change language", onlineUsers:"📡 Online", globalChat:"💬 Global Chat", send:"Send", call:"📹", wall:"📸 Wall", upload:"📤 Upload", logout:"🚪 Logout", admin:"🔐 Admin", usernamePlaceholder:"Username" },
@@ -725,40 +730,48 @@
         });
     }
     
-    // Función de traducción mejorada para mensajes
+    // FUNCIÓN DE TRADUCCIÓN MEJORADA - CORREGIDA
     async function translateText(text, targetLang, sourceLang = 'es') {
-        if (!text || targetLang === sourceLang) return text;
+        if (!text || !targetLang) return text;
+        if (targetLang === sourceLang) return text;
         
-        const cacheKey = text + '|' + sourceLang + '|' + targetLang;
-        if (translationCache.has(cacheKey)) return translationCache.get(cacheKey);
+        const cacheKey = `${text}|${sourceLang}|${targetLang}`;
+        if (translationCache.has(cacheKey)) {
+            return translationCache.get(cacheKey);
+        }
         
         try {
-            // Mapeo de idiomas para MyMemory
-            const langMap = {
-                'es': 'es', 'en': 'en', 'fr': 'fr', 'de': 'de', 'pt': 'pt', 'it': 'it',
-                'zh': 'zh', 'ja': 'ja', 'ar': 'ar', 'ru': 'ru', 'ko': 'ko', 'hi': 'hi',
-                'nl': 'nl', 'sv': 'sv', 'pl': 'pl', 'tr': 'tr', 'el': 'el', 'he': 'iw',
-                'th': 'th', 'vi': 'vi'
-            };
+            const pair = `${sourceLang}|${targetLang}`;
+            const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${pair}&de=admin@miluchat.com`;
             
-            const fromLang = langMap[sourceLang] || 'es';
-            const toLang = langMap[targetLang] || 'en';
+            const response = await fetch(url);
+            const data = await response.json();
             
-            const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${fromLang}|${toLang}`;
-            const res = await fetch(url);
-            const data = await res.json();
-            let translated = data.responseData.translatedText || text;
+            let translatedText = data.responseData.translatedText;
             
-            // Limpiar HTML entities
-            translated = translated.replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, '&');
+            if (translatedText && translatedText !== text) {
+                // Limpiar el texto traducido
+                translatedText = translatedText.replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, '&');
+                translationCache.set(cacheKey, translatedText);
+                return translatedText;
+            }
             
-            // Guardar en caché
-            translationCache.set(cacheKey, translated);
-            return translated;
-        } catch(e) { 
-            console.error('Error traduciendo:', e);
-            return text; 
+            return text;
+        } catch (error) {
+            console.error('Error en traducción:', error);
+            return text;
         }
+    }
+    
+    // Función para obtener el nombre del idioma
+    function getLanguageFlag(langCode) {
+        const flags = {
+            'es': '🇪🇸', 'en': '🇺🇸', 'fr': '🇫🇷', 'de': '🇩🇪', 'pt': '🇵🇹', 'it': '🇮🇹',
+            'zh': '🇨🇳', 'ja': '🇯🇵', 'ar': '🇸🇦', 'ru': '🇷🇺', 'ko': '🇰🇷', 'hi': '🇮🇳',
+            'nl': '🇳🇱', 'sv': '🇸🇪', 'pl': '🇵🇱', 'tr': '🇹🇷', 'el': '🇬🇷', 'he': '🇮🇱',
+            'th': '🇹🇭', 'vi': '🇻🇳'
+        };
+        return flags[langCode] || '🌐';
     }
     
     function playSound() {
@@ -852,6 +865,7 @@
                 <div class="message-username">
                     <span>${escapeHtml(data.username)}</span>
                     ${getGenderBadge(data.gender)}
+                    <span class="translation-badge">${getLanguageFlag(data.originalLang)}</span>
                 </div>
                 <span>${new Date(data.timestamp).toLocaleTimeString()}</span>
                 ${isOwn ? `<button class="delete-msg" data-id="${data.id}">🗑️</button>` : ''}
@@ -927,18 +941,22 @@
     }
     if(mobileOverlay) mobileOverlay.onclick = closeMenus;
     
-    // Función para agregar mensaje al DOM con TRADUCCIÓN AUTOMÁTICA
+    // FUNCIÓN PRINCIPAL PARA AGREGAR MENSAJE CON TRADUCCIÓN AUTOMÁTICA - CORREGIDA
     async function addMessageToDOM(data, isOwn) {
         const div = document.createElement('div');
         div.className = `message ${isOwn ? 'own' : ''}`;
-        let displayText = data.text;
         
-        // TRADUCCIÓN AUTOMÁTICA: si no es mi mensaje y el idioma del mensaje es diferente al mío, traducir
-        if (!isOwn && userLanguage !== (data.originalLang || 'es')) {
+        let displayText = data.text;
+        const messageOriginalLang = data.originalLang || 'es';
+        
+        // TRADUCCIÓN AUTOMÁTICA: Si NO es mi mensaje Y el idioma del mensaje es diferente al mío
+        if (!isOwn && userLanguage !== messageOriginalLang) {
             try {
-                displayText = await translateText(data.text, userLanguage, data.originalLang || 'es');
+                console.log(`Traduciendo: "${data.text}" de ${messageOriginalLang} a ${userLanguage}`);
+                displayText = await translateText(data.text, userLanguage, messageOriginalLang);
+                console.log(`Traducción: "${displayText}"`);
             } catch(e) {
-                console.error('Error en traducción:', e);
+                console.error('Error en traducción automática:', e);
                 displayText = data.text;
             }
         }
@@ -949,28 +967,24 @@
                 <div class="message-username">
                     <span>${escapeHtml(data.username)}</span>
                     ${getGenderBadge(data.gender)}
-                    <span style="font-size:10px; opacity:0.7;">${data.originalLang ? getLanguageName(data.originalLang) : ''}</span>
+                    ${!isOwn && userLanguage !== messageOriginalLang ? `<span class="translation-badge" title="Traducido de ${messageOriginalLang}">🌐</span>` : ''}
+                    <span class="translation-badge">${getLanguageFlag(messageOriginalLang)}</span>
                 </div>
                 <span>${new Date(data.timestamp).toLocaleTimeString()}</span>
                 ${isOwn ? `<button class="delete-msg" data-id="${data.id}">🗑️</button>` : ''}
             </div>
         `;
+        
         if(messagesContainer) {
             messagesContainer.appendChild(div);
             if (autoScroll) messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
+        
         playSound();
         if (!isOwn && document.hidden) showNotification(data.username, displayText);
+        
         const delBtn = div.querySelector('.delete-msg');
         if (delBtn) delBtn.onclick = () => { if(confirm('¿Eliminar mensaje?')) socket.emit('delete message', { messageId: data.id }); };
-    }
-    
-    function getLanguageName(code) {
-        const names = {
-            'es': '🇪🇸', 'en': '🇺🇸', 'fr': '🇫🇷', 'de': '🇩🇪', 'pt': '🇵🇹', 'it': '🇮🇹',
-            'zh': '🇨🇳', 'ja': '🇯🇵', 'ar': '🇸🇦', 'ru': '🇷🇺', 'ko': '🇰🇷', 'hi': '🇮🇳'
-        };
-        return names[code] || '';
     }
     
     function addSystemMessage(text, showInChat = true) {
@@ -1017,7 +1031,7 @@
                     div.className = 'user-online';
                     div.innerHTML = `
                         <span class="status-dot"></span>
-                        <span>${escapeHtml(user.username)} ${getGenderIcon(user.gender)} (${user.country})</span>
+                        <span>${escapeHtml(user.username)} ${getGenderIcon(user.gender)} (${user.country}) ${getLanguageFlag(user.language)}</span>
                     `;
                     div.onclick = () => openPrivateChat(user.username);
                     container.appendChild(div);
@@ -1299,7 +1313,7 @@
         }
     });
     
-    socket.on('audio message', (data) => {
+    socket.on('audio message', async (data) => {
         if (currentRoom === 'global') {
             addAudioMessageToDOM(data, data.username === currentUsername);
         }
@@ -1307,7 +1321,7 @@
     
     socket.on('coins update', updateCoins);
     
-    // Chat privado (resumido por longitud, la versión completa está en el código final)
+    // Chat privado
     function openPrivateChat(targetUser) {
         if (targetUser === currentUsername) return;
         if (floatingWindows.has(targetUser)) {
@@ -1465,15 +1479,20 @@
                     const msgDiv = document.createElement('div');
                     msgDiv.className = `message ${data.username === currentUsername ? 'own' : ''}`;
                     let displayText = data.text;
-                    if (data.username !== currentUsername && userLanguage !== (data.originalLang || 'es')) {
-                        displayText = await translateText(data.text, userLanguage, data.originalLang || 'es');
+                    const msgOriginalLang = data.originalLang || 'es';
+                    
+                    if (data.username !== currentUsername && userLanguage !== msgOriginalLang) {
+                        displayText = await translateText(data.text, userLanguage, msgOriginalLang);
                     }
+                    
                     msgDiv.innerHTML = `
                         <div class="message-bubble">${escapeHtml(displayText)}</div>
                         <div class="message-info">
                             <div class="message-username">
                                 <span>${escapeHtml(data.username)}</span>
                                 ${getGenderBadge(data.gender)}
+                                ${data.username !== currentUsername && userLanguage !== msgOriginalLang ? `<span class="translation-badge" title="Traducido">🌐</span>` : ''}
+                                <span class="translation-badge">${getLanguageFlag(msgOriginalLang)}</span>
                             </div>
                             <span>${new Date(data.timestamp).toLocaleTimeString()}</span>
                         </div>
@@ -1501,6 +1520,7 @@
                             <div class="message-username">
                                 <span>${escapeHtml(data.username)}</span>
                                 ${getGenderBadge(data.gender)}
+                                <span class="translation-badge">${getLanguageFlag(data.originalLang)}</span>
                             </div>
                             <span>${new Date(data.timestamp).toLocaleTimeString()}</span>
                         </div>
@@ -1538,11 +1558,19 @@
     function escapeHtml(str) { return String(str).replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
     
     // Socket events
-    socket.on('global history', (msgs) => msgs.forEach(m => {
-        if(m.text) addMessageToDOM(m, m.username === currentUsername);
-        else if(m.audioData) addAudioMessageToDOM(m, m.username === currentUsername);
-    }));
-    socket.on('chat message', (data) => { if (currentRoom === 'global') addMessageToDOM(data, data.username === currentUsername); });
+    socket.on('global history', async (msgs) => {
+        for (const m of msgs) {
+            if(m.text) addMessageToDOM(m, m.username === currentUsername);
+            else if(m.audioData) addAudioMessageToDOM(m, m.username === currentUsername);
+        }
+    });
+    
+    socket.on('chat message', (data) => { 
+        if (currentRoom === 'global') {
+            addMessageToDOM(data, data.username === currentUsername);
+        }
+    });
+    
     socket.on('system message', (data) => addSystemMessage(data.text, true));
     socket.on('user list', updateUsersList);
     socket.on('media posts update', (posts) => { mediaPosts = posts; renderMediaWall(); });
@@ -1590,21 +1618,27 @@
         }
     });
     
-    // Cambiar idioma
+    // Cambiar idioma - RECARGAR MENSAJES TRADUCIDOS
     const changeLangBtns = document.querySelectorAll('#changeLangBtn, #changeLangBtn2');
     changeLangBtns.forEach(btn => {
         if(btn) {
             btn.onclick = () => {
-                const langOptions = Object.keys(translations).join(', ');
-                const newLang = prompt(`Código de idioma (${langOptions}):\nespañol: es\nenglish: en\nfrançais: fr\ndeutsch: de\nportuguês: pt\nitaliano: it\n中文: zh\n日本語: ja\nالعربية: ar\nРусский: ru\n한국어: ko\nहिन्दी: hi`, userLanguage);
+                const langOptions = 'es, en, fr, de, pt, it, zh, ja, ar, ru, ko, hi, nl, sv, pl, tr, el, he, th, vi';
+                const newLang = prompt(`🌐 Cambiar idioma a (${langOptions}):`, userLanguage);
                 if (newLang && translations[newLang]) {
                     userLanguage = newLang;
                     applyUILanguage(newLang);
                     addSystemMessage(`✨ Idioma cambiado a ${newLang}. Los mensajes se traducirán automáticamente.`, true);
+                    // Recargar mensajes para aplicar nueva traducción
                     if(messagesContainer) messagesContainer.innerHTML = '';
-                    socket.emit('global history', (msgs) => msgs.forEach(m => addMessageToDOM(m, m.username === currentUsername)));
+                    socket.emit('global history', (msgs) => {
+                        msgs.forEach(m => {
+                            if(m.text) addMessageToDOM(m, m.username === currentUsername);
+                            else if(m.audioData) addAudioMessageToDOM(m, m.username === currentUsername);
+                        });
+                    });
                 } else if(newLang) {
-                    alert('Idioma no soportado. Usa: es, en, fr, de, pt, it, zh, ja, ar, ru, ko, hi');
+                    alert(`❌ Idioma no soportado. Usa: ${langOptions}`);
                 }
             };
         }
