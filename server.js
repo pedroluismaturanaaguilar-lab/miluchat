@@ -12,17 +12,6 @@ const io = new Server(server, {
 app.use(express.static(path.join(__dirname)));
 app.use(express.json({ limit: '50mb' }));
 
-// Filtro de palabras ofensivas
-const badWords = ['puto', 'puta', 'mierda', 'coño', 'joder', 'gilipollas', 'idiota', 'estúpido', 'fuck', 'shit', 'bitch'];
-const filterMessage = (text) => {
-    let filtered = text;
-    badWords.forEach(word => {
-        const regex = new RegExp(`\\b${word}\\b`, 'gi');
-        filtered = filtered.replace(regex, '****');
-    });
-    return filtered;
-};
-
 const users = new Map();
 const userSockets = new Map();
 const userData = new Map();
@@ -30,7 +19,6 @@ const privateRooms = new Map();
 let globalMessages = [];
 let mediaPosts = [];
 const userVisits = new Map();
-let pendingCoinRequests = [];
 
 const ADMIN_PASSWORD = '2016';
 
@@ -79,12 +67,11 @@ io.on('connection', (socket) => {
 
     socket.on('chat message', ({ text, room }) => {
         if (!socket.username) return;
-        const filtered = filterMessage(text);
         const msg = {
             id: Date.now() + '-' + Math.random().toString(36).substr(2, 6),
             type: 'text',
             username: socket.username,
-            text: filtered,
+            text: text,
             timestamp: Date.now(),
             originalLang: socket.language || 'es',
             gender: socket.gender
@@ -135,14 +122,6 @@ io.on('connection', (socket) => {
         };
         mediaPosts.push(post);
         io.emit('media posts update', mediaPosts);
-        io.emit('chat message', {
-            id: Date.now() + '-info',
-            type: 'text',
-            username: 'Sistema',
-            text: `📸 ${socket.username} subió ${mediaType === 'image' ? 'una imagen' : 'un video'}`,
-            timestamp: Date.now(),
-            gender: socket.gender
-        });
     });
 
     socket.on('like content', ({ contentId }) => {
@@ -182,15 +161,11 @@ io.on('connection', (socket) => {
         }
     });
 
-    // Videollamada WebRTC
+    // Videollamada
     socket.on('check call cost', ({ durationMinutes }, callback) => {
         const user = users.get(socket.id);
         const cost = Math.ceil(durationMinutes / 2) * 1.5;
-        if(user) {
-            callback({ canAfford: user.coins >= cost, cost });
-        } else {
-            callback({ canAfford: false, cost });
-        }
+        callback({ canAfford: user && user.coins >= cost, cost });
     });
 
     socket.on('call-offer', ({ offer, targetUser, durationMinutes }) => {
@@ -233,86 +208,10 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('call-ended');
     });
 
-    // Admin
-    socket.on('admin login', (password, callback) => {
-        if (password === ADMIN_PASSWORD) {
-            socket.isAdmin = true;
-            callback(true);
-            socket.emit('admin pending requests', pendingCoinRequests);
-        } else {
-            callback(false);
-        }
-    });
-
-    socket.on('admin give coins', ({ targetUsername, amount }, callback) => {
-        if (!socket.isAdmin) {
-            callback({ success: false, error: 'No autorizado' });
-            return;
-        }
-        const targetId = userSockets.get(targetUsername);
-        if (!targetId) {
-            callback({ success: false, error: 'Usuario no conectado' });
-            return;
-        }
-        const target = users.get(targetId);
-        target.coins += amount;
-        users.set(targetId, target);
-        io.to(targetId).emit('coins update', target.coins);
-        broadcastUserList();
-        callback({ success: true });
-    });
-
-    socket.on('admin toggle block', ({ targetUsername, block }, callback) => {
-        if (!socket.isAdmin) {
-            callback({ success: false, error: 'No autorizado' });
-            return;
-        }
-        const info = userData.get(targetUsername);
-        if (!info) {
-            callback({ success: false, error: 'Usuario no existe' });
-            return;
-        }
-        info.blocked = block;
-        userData.set(targetUsername, info);
-        if (block) {
-            const targetId = userSockets.get(targetUsername);
-            if (targetId) {
-                io.to(targetId).emit('force logout', 'Has sido bloqueado');
-                const targetSocket = io.sockets.sockets.get(targetId);
-                if(targetSocket) targetSocket.disconnect(true);
-                userSockets.delete(targetUsername);
-            }
-        }
-        callback({ success: true });
-        broadcastUserList();
-    });
-
-    socket.on('admin resolve request', ({ requestIndex, giveCoins }) => {
-        if (!socket.isAdmin) return;
-        const req = pendingCoinRequests[requestIndex];
-        if (!req) return;
-        if (giveCoins) {
-            const targetId = userSockets.get(req.from);
-            if (targetId) {
-                const target = users.get(targetId);
-                target.coins += req.amount;
-                users.set(targetId, target);
-                io.to(targetId).emit('coins update', target.coins);
-                io.to(targetId).emit('system message', { text: `💰 Admin te dio ${req.amount} monedas.`, timestamp: Date.now() });
-                broadcastUserList();
-            }
-        }
-        pendingCoinRequests.splice(requestIndex, 1);
-        io.emit('admin pending requests', pendingCoinRequests);
-    });
-
-    socket.on('request coins', ({ amount, message }) => {
+    socket.on('request coins', ({ amount }) => {
         if (!socket.username) return;
-        pendingCoinRequests.push({ from: socket.username, amount, message, timestamp: Date.now() });
-        io.emit('new coin request', pendingCoinRequests[pendingCoinRequests.length - 1]);
     });
 
-    // Chat privado
     socket.on('start private chat', ({ targetUsername }, callback) => {
         if (!socket.username || targetUsername === socket.username) {
             callback({ success: false, error: 'No puedes chatear contigo mismo' });
