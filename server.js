@@ -13,7 +13,7 @@ app.use(express.static(path.join(__dirname)));
 app.use(express.json({ limit: '50mb' }));
 
 // Filtro de palabras ofensivas
-const badWords = ['puto', 'puta', 'mierda', 'coño', 'joder', 'gilipollas', 'idiota', 'estúpido'];
+const badWords = ['puto', 'puta', 'mierda', 'coño', 'joder', 'gilipollas', 'idiota', 'estúpido', 'fuck', 'shit', 'bitch'];
 const filterMessage = (text) => {
     let filtered = text;
     badWords.forEach(word => {
