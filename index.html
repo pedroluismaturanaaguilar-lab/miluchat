@@ -33,6 +33,9 @@
             border-radius: 24px;
             text-align: center;
             box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+            max-height: 90vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
         .welcome-screen select, .welcome-screen input, .welcome-screen button {
             width: 100%;
@@ -70,7 +73,40 @@
         .gender-option.female.selected { background: var(--female-color); }
         .gender-icon { font-size: 24px; display: block; }
         
-        .terms-box { font-size: 0.75rem; margin: 10px 0; text-align: left; max-height: 130px; overflow-y: auto; background: var(--bg-chat); padding: 8px; border-radius: 12px; -webkit-overflow-scrolling: touch; }
+        .terms-box {
+            font-size: 0.75rem;
+            margin: 10px 0;
+            text-align: left;
+            max-height: 150px;
+            overflow-y: auto;
+            background: var(--bg-chat);
+            padding: 12px;
+            border-radius: 12px;
+            -webkit-overflow-scrolling: touch;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+        .terms-box strong {
+            color: var(--accent);
+            display: block;
+            margin-bottom: 8px;
+        }
+        .terms-box p {
+            margin-bottom: 6px;
+        }
+        
+        .accept-terms-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 10px 0;
+            cursor: pointer;
+        }
+        .accept-terms-label input {
+            width: auto;
+            margin: 0;
+            transform: scale(1.2);
+        }
         
         .chat-app { display: none; width: 100%; height: 100vh; background: var(--bg-sidebar); position: fixed; top: 0; left: 0; }
         .app-grid { display: grid; grid-template-columns: 260px 1fr 260px; height: 100%; transition: all 0.3s; }
@@ -312,6 +348,8 @@
         .reject-call { background: var(--danger); color: white; }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        button:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
@@ -352,10 +390,22 @@
         </div>
     </div>
     <input type="text" id="usernameInput" placeholder="Nombre de usuario">
-    <div class="terms-box" id="termsBox"></div>
-    <label><input type="checkbox" id="acceptTerms"> <span id="acceptTermsLabel">Acepto los términos</span></label>
+    <div class="terms-box" id="termsBox">
+        <strong>📜 TÉRMINOS Y CONDICIONES</strong>
+        <p>1. Aceptas las reglas de convivencia y respeto mutuo.</p>
+        <p>2. El contenido subido expira automáticamente en 12 horas.</p>
+        <p>3. Las monedas se ganan dando likes a contenido.</p>
+        <p>4. Las videollamadas consumen monedas (1.5 monedas por minuto).</p>
+        <p>5. No está permitido el contenido ofensivo o inapropiado.</p>
+        <p>6. La plataforma se reserva el derecho de bloquear usuarios.</p>
+        <p>7. Los mensajes de audio tienen duración máxima de 30 segundos.</p>
+    </div>
+    <label class="accept-terms-label">
+        <input type="checkbox" id="acceptTerms">
+        <span id="acceptTermsLabel">Acepto los términos y condiciones</span>
+    </label>
     <button id="joinBtn">Ingresar</button>
-    <div id="errorMsg" style="color:#ef4444; margin-top:8px;"></div>
+    <div id="errorMsg" style="color:#ef4444; margin-top:8px; font-size:14px;"></div>
 </div>
 <div id="chatApp" class="chat-app">
     <div class="mobile-header">
@@ -442,14 +492,14 @@
 
 <script>
     const translations = {
-        es: { welcomeTitle:"MILUCHAT", acceptTerms:"Acepto los términos", joinBtn:"Ingresar", requestCoins:"➕ Pedir monedas", changeLang:"🌐 Cambiar idioma", onlineUsers:"📡 En línea", globalChat:"💬 Chat Global", send:"Enviar", call:"📹", wall:"📸 Muro (sube fotos/videos)", upload:"📤 Subir", logout:"🚪 Cerrar sesión", admin:"🔐 Admin", terms:"📜 Términos y condiciones\n1. Aceptas las reglas de convivencia.\n2. El contenido subido expira en 12h.\n3. Las monedas se ganan con likes.\n4. Las videollamadas consumen monedas.", usernamePlaceholder:"Nombre de usuario" },
-        en: { welcomeTitle:"MILUCHAT", acceptTerms:"I accept the terms", joinBtn:"Login", requestCoins:"➕ Request coins", changeLang:"🌐 Change language", onlineUsers:"📡 Online", globalChat:"💬 Global Chat", send:"Send", call:"📹", wall:"📸 Wall (upload photos/videos)", upload:"📤 Upload", logout:"🚪 Logout", admin:"🔐 Admin", terms:"📜 Terms and conditions\n1. You accept coexistence rules.\n2. Uploaded content expires in 12h.\n3. Coins are earned with likes.\n4. Video calls consume coins.", usernamePlaceholder:"Username" },
-        fr: { welcomeTitle:"MILUCHAT", acceptTerms:"J'accepte les conditions", joinBtn:"Connexion", requestCoins:"➕ Demander des pièces", changeLang:"🌐 Changer de langue", onlineUsers:"📡 En ligne", globalChat:"💬 Chat Global", send:"Envoyer", call:"📹", wall:"📸 Mur (publier photos/vidéos)", upload:"📤 Publier", logout:"🚪 Déconnexion", admin:"🔐 Admin", terms:"📜 Conditions générales\n1. Vous acceptez les règles de convivialité.\n2. Le contenu expire après 12h.\n3. Les pièces s'obtiennent avec des likes.\n4. Les appels vidéo consomment des pièces.", usernamePlaceholder:"Nom d'utilisateur" },
-        de: { welcomeTitle:"MILUCHAT", acceptTerms:"Ich akzeptiere die Bedingungen", joinBtn:"Einloggen", requestCoins:"➕ Münzen anfordern", changeLang:"🌐 Sprache ändern", onlineUsers:"📡 Online", globalChat:"💬 Globaler Chat", send:"Senden", call:"📹", wall:"📸 Wand (Fotos/Videos hochladen)", upload:"📤 Hochladen", logout:"🚪 Abmelden", admin:"🔐 Admin", terms:"📜 Allgemeine Geschäftsbedingungen\n1. Sie akzeptieren die Verhaltensregeln.\n2. Hochgeladene Inhalte verfallen nach 12h.\n3. Münzen werden durch Likes verdient.\n4. Videoanrufe verbrauchen Münzen.", usernamePlaceholder:"Benutzername" },
-        pt: { welcomeTitle:"MILUCHAT", acceptTerms:"Aceito os termos", joinBtn:"Entrar", requestCoins:"➕ Pedir moedas", changeLang:"🌐 Mudar idioma", onlineUsers:"📡 Online", globalChat:"💬 Chat Global", send:"Enviar", call:"📹", wall:"📸 Mural (enviar fotos/vídeos)", upload:"📤 Enviar", logout:"🚪 Sair", admin:"🔐 Admin", terms:"📜 Termos e condições\n1. Aceita as regras de convivência.\n2. O conteúdo expira em 12h.\n3. Moedas são ganhas com likes.\n4. Chamadas de vídeo consomem moedas.", usernamePlaceholder:"Nome de usuário" },
-        it: { welcomeTitle:"MILUCHAT", acceptTerms:"Accetto i termini", joinBtn:"Accedi", requestCoins:"➕ Richiedi monete", changeLang:"🌐 Cambia lingua", onlineUsers:"📡 Online", globalChat:"💬 Chat Globale", send:"Invia", call:"📹", wall:"📸 Bacheca (carica foto/video)", upload:"📤 Carica", logout:"🚪 Esci", admin:"🔐 Admin", terms:"📜 Termini e condizioni\n1. Accetti le regole di convivenza.\n2. I contenuti scadono dopo 12 ore.\n3. Le monete si guadagnano con i like.\n4. Le videochiamate consumano monete.", usernamePlaceholder:"Nome utente" },
-        zh: { welcomeTitle:"MILUCHAT", acceptTerms:"我接受条款", joinBtn:"登录", requestCoins:"➕ 请求硬币", changeLang:"🌐 更改语言", onlineUsers:"📡 在线", globalChat:"💬 全球聊天", send:"发送", call:"📹", wall:"📸 墙 (上传照片/视频)", upload:"📤 上传", logout:"🚪 退出", admin:"🔐 管理员", terms:"📜 条款和条件\n1. 您接受共存规则。\n2. 上传内容12小时后过期。\n3. 硬币通过点赞获得。\n4. 视频通话消耗硬币。", usernamePlaceholder:"用户名" },
-        ja: { welcomeTitle:"MILUCHAT", acceptTerms:"利用規約に同意する", joinBtn:"ログイン", requestCoins:"➕ コインをリクエスト", changeLang:"🌐 言語変更", onlineUsers:"📡 オンライン", globalChat:"💬 グローバルチャット", send:"送信", call:"📹", wall:"📸 ウォール (写真/動画をアップロード)", upload:"📤 アップロード", logout:"🚪 ログアウト", admin:"🔐 管理者", terms:"📜 利用規約\n1. 共存ルールに同意します。\n2. アップロードされたコンテンツは12時間で期限切れになります。\n3. いいね！でコインを獲得できます。\n4. ビデオ通話にはコインが必要です。", usernamePlaceholder:"ユーザー名" }
+        es: { welcomeTitle:"MILUCHAT", acceptTerms:"Acepto los términos y condiciones", joinBtn:"Ingresar", requestCoins:"➕ Pedir monedas", changeLang:"🌐 Cambiar idioma", onlineUsers:"📡 En línea", globalChat:"💬 Chat Global", send:"Enviar", call:"📹", wall:"📸 Muro (sube fotos/videos)", upload:"📤 Subir", logout:"🚪 Cerrar sesión", admin:"🔐 Admin", usernamePlaceholder:"Nombre de usuario" },
+        en: { welcomeTitle:"MILUCHAT", acceptTerms:"I accept the terms and conditions", joinBtn:"Login", requestCoins:"➕ Request coins", changeLang:"🌐 Change language", onlineUsers:"📡 Online", globalChat:"💬 Global Chat", send:"Send", call:"📹", wall:"📸 Wall (upload photos/videos)", upload:"📤 Upload", logout:"🚪 Logout", admin:"🔐 Admin", usernamePlaceholder:"Username" },
+        fr: { welcomeTitle:"MILUCHAT", acceptTerms:"J'accepte les termes et conditions", joinBtn:"Connexion", requestCoins:"➕ Demander des pièces", changeLang:"🌐 Changer de langue", onlineUsers:"📡 En ligne", globalChat:"💬 Chat Global", send:"Envoyer", call:"📹", wall:"📸 Mur (publier photos/vidéos)", upload:"📤 Publier", logout:"🚪 Déconnexion", admin:"🔐 Admin", usernamePlaceholder:"Nom d'utilisateur" },
+        de: { welcomeTitle:"MILUCHAT", acceptTerms:"Ich akzeptiere die Allgemeinen Geschäftsbedingungen", joinBtn:"Einloggen", requestCoins:"➕ Münzen anfordern", changeLang:"🌐 Sprache ändern", onlineUsers:"📡 Online", globalChat:"💬 Globaler Chat", send:"Senden", call:"📹", wall:"📸 Wand (Fotos/Videos hochladen)", upload:"📤 Hochladen", logout:"🚪 Abmelden", admin:"🔐 Admin", usernamePlaceholder:"Benutzername" },
+        pt: { welcomeTitle:"MILUCHAT", acceptTerms:"Aceito os termos e condições", joinBtn:"Entrar", requestCoins:"➕ Pedir moedas", changeLang:"🌐 Mudar idioma", onlineUsers:"📡 Online", globalChat:"💬 Chat Global", send:"Enviar", call:"📹", wall:"📸 Mural (enviar fotos/vídeos)", upload:"📤 Enviar", logout:"🚪 Sair", admin:"🔐 Admin", usernamePlaceholder:"Nome de usuário" },
+        it: { welcomeTitle:"MILUCHAT", acceptTerms:"Accetto i termini e condizioni", joinBtn:"Accedi", requestCoins:"➕ Richiedi monete", changeLang:"🌐 Cambia lingua", onlineUsers:"📡 Online", globalChat:"💬 Chat Globale", send:"Invia", call:"📹", wall:"📸 Bacheca (carica foto/video)", upload:"📤 Carica", logout:"🚪 Esci", admin:"🔐 Admin", usernamePlaceholder:"Nome utente" },
+        zh: { welcomeTitle:"MILUCHAT", acceptTerms:"我接受条款和条件", joinBtn:"登录", requestCoins:"➕ 请求硬币", changeLang:"🌐 更改语言", onlineUsers:"📡 在线", globalChat:"💬 全球聊天", send:"发送", call:"📹", wall:"📸 墙 (上传照片/视频)", upload:"📤 上传", logout:"🚪 退出", admin:"🔐 管理员", usernamePlaceholder:"用户名" },
+        ja: { welcomeTitle:"MILUCHAT", acceptTerms:"利用規約に同意します", joinBtn:"ログイン", requestCoins:"➕ コインをリクエスト", changeLang:"🌐 言語変更", onlineUsers:"📡 オンライン", globalChat:"💬 グローバルチャット", send:"送信", call:"📹", wall:"📸 ウォール (写真/動画をアップロード)", upload:"📤 アップロード", logout:"🚪 ログアウト", admin:"🔐 管理者", usernamePlaceholder:"ユーザー名" }
     };
     
     let userLanguage = 'es';
@@ -483,6 +533,11 @@
             genderOptions.forEach(opt => opt.classList.remove('selected'));
             option.classList.add('selected');
             selectedGender = option.dataset.gender;
+            // Limpiar error de género si existe
+            const errorMsg = document.getElementById('errorMsg');
+            if(errorMsg && errorMsg.innerText === 'Selecciona tu género') {
+                errorMsg.innerText = '';
+            }
         };
     });
     
@@ -495,7 +550,6 @@
         const callGlobalBtnEl = document.getElementById('callGlobalBtn');
         const uploadMediaBtnEl = document.getElementById('uploadMediaBtn');
         const usernameInputEl = document.getElementById('usernameInput');
-        const termsBoxEl = document.getElementById('termsBox');
         
         if(welcomeTitle) welcomeTitle.innerText = t.welcomeTitle;
         if(acceptTermsLabel) acceptTermsLabel.innerText = t.acceptTerms;
@@ -504,7 +558,6 @@
         if(callGlobalBtnEl) callGlobalBtnEl.innerText = t.call;
         if(uploadMediaBtnEl) uploadMediaBtnEl.innerText = t.upload;
         if(usernameInputEl) usernameInputEl.placeholder = t.usernamePlaceholder;
-        if(termsBoxEl) termsBoxEl.innerHTML = `<strong>${t.terms.split('\n')[0]}</strong><br>${t.terms.split('\n').slice(1).join('<br>')}`;
         
         document.querySelectorAll('#requestCoinsBtn, #requestCoinsBtn2').forEach(btn => { if(btn) btn.innerText = t.requestCoins; });
         document.querySelectorAll('#changeLangBtn, #changeLangBtn2').forEach(btn => { if(btn) btn.innerText = t.changeLang; });
@@ -727,10 +780,6 @@
         };
     }
     if(mobileOverlay) mobileOverlay.onclick = closeMenus;
-    
-    if(acceptTermsCheck) {
-        acceptTermsCheck.onchange = () => { if(joinBtn) joinBtn.disabled = !acceptTermsCheck.checked; };
-    }
     
     async function addMessageToDOM(data, isOwn) {
         const div = document.createElement('div');
@@ -1611,6 +1660,15 @@
         });
     }
     
+    // Habilitar/deshabilitar botón de unirse según términos
+    if(acceptTermsCheck) {
+        acceptTermsCheck.onchange = () => {
+            if(joinBtn) joinBtn.disabled = !acceptTermsCheck.checked;
+        };
+        // Inicialmente deshabilitado hasta que acepte términos
+        if(joinBtn) joinBtn.disabled = true;
+    }
+    
     const savedLang = localStorage.getItem('miluchat_lang');
     if (savedLang && translations[savedLang]) applyUILanguage(savedLang);
     else applyUILanguage('es');
@@ -1629,10 +1687,21 @@
             const lang = languageSelect ? languageSelect.value : 'es';
             const country = countrySelect ? countrySelect.value : 'COL';
             const gender = selectedGender;
-            if (name && gender && acceptTermsCheck && acceptTermsCheck.checked) joinChat(name, lang, country, gender);
-            else if (!gender && errorMsg) errorMsg.innerText = 'Selecciona tu género';
-            else if (acceptTermsCheck && !acceptTermsCheck.checked && errorMsg) errorMsg.innerText = 'Acepta los términos';
-            else if (!name && errorMsg) errorMsg.innerText = 'Ingresa un nombre';
+            
+            if(!name) {
+                errorMsg.innerText = '❌ Ingresa un nombre de usuario';
+                return;
+            }
+            if(!gender) {
+                errorMsg.innerText = '❌ Selecciona tu género (Hombre o Mujer)';
+                return;
+            }
+            if(!acceptTermsCheck || !acceptTermsCheck.checked) {
+                errorMsg.innerText = '❌ Debes aceptar los términos y condiciones';
+                return;
+            }
+            
+            joinChat(name, lang, country, gender);
         };
     }
 </script>
