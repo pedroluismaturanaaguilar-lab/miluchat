@@ -143,6 +143,7 @@
         .online-users { padding: 12px; }
         .user-online { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 40px; background: var(--bg-chat); margin: 6px 0; cursor: pointer; }
         .status-dot { width: 10px; height: 10px; background: #22c55e; border-radius: 50%; display: inline-block; }
+        .user-gender-icon { font-size: 14px; margin-left: 4px; }
         
         .center-area { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); overflow: hidden; }
         .chat-column, .wall-column { background: var(--bg-chat); display: flex; flex-direction: column; overflow: hidden; }
@@ -362,8 +363,8 @@
         
         .translation-badge {
             font-size: 10px;
-            opacity: 0.7;
-            margin-left: 4px;
+            opacity: 0.6;
+            margin-left: 5px;
         }
     </style>
 </head>
@@ -402,7 +403,7 @@
             <option value="BOL">🇧🇴 Bolivia</option>
             <option value="BRA">🇧🇷 Brasil</option>
             <option value="CHL">🇨🇱 Chile</option>
-            <option value="COL" selected>🇨🇴 Colombia</option>
+            <option value="COL">🇨🇴 Colombia</option>
             <option value="CRI">🇨🇷 Costa Rica</option>
             <option value="CUB">🇨🇺 Cuba</option>
             <option value="ECU">🇪🇨 Ecuador</option>
@@ -603,7 +604,17 @@
     // Traducciones para la interfaz
     const translations = {
         es: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ Acepto los términos y condiciones", joinBtn:"🚀 Ingresar", requestCoins:"➕ Pedir monedas", changeLang:"🌐 Cambiar idioma", onlineUsers:"📡 En línea", globalChat:"💬 Chat Global", send:"Enviar", call:"📹", wall:"📸 Muro", upload:"📤 Subir", logout:"🚪 Cerrar sesión", admin:"🔐 Admin", usernamePlaceholder:"Nombre de usuario" },
-        en: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ I accept the terms and conditions", joinBtn:"🚀 Login", requestCoins:"➕ Request coins", changeLang:"🌐 Change language", onlineUsers:"📡 Online", globalChat:"💬 Global Chat", send:"Send", call:"📹", wall:"📸 Wall", upload:"📤 Upload", logout:"🚪 Logout", admin:"🔐 Admin", usernamePlaceholder:"Username" }
+        en: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ I accept the terms and conditions", joinBtn:"🚀 Login", requestCoins:"➕ Request coins", changeLang:"🌐 Change language", onlineUsers:"📡 Online", globalChat:"💬 Global Chat", send:"Send", call:"📹", wall:"📸 Wall", upload:"📤 Upload", logout:"🚪 Logout", admin:"🔐 Admin", usernamePlaceholder:"Username" },
+        fr: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ J'accepte les termes et conditions", joinBtn:"🚀 Connexion", requestCoins:"➕ Demander des pièces", changeLang:"🌐 Changer de langue", onlineUsers:"📡 En ligne", globalChat:"💬 Chat Global", send:"Envoyer", call:"📹", wall:"📸 Mur", upload:"📤 Publier", logout:"🚪 Déconnexion", admin:"🔐 Admin", usernamePlaceholder:"Nom d'utilisateur" },
+        de: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ Ich akzeptiere die Allgemeinen Geschäftsbedingungen", joinBtn:"🚀 Einloggen", requestCoins:"➕ Münzen anfordern", changeLang:"🌐 Sprache ändern", onlineUsers:"📡 Online", globalChat:"💬 Globaler Chat", send:"Senden", call:"📹", wall:"📸 Wand", upload:"📤 Hochladen", logout:"🚪 Abmelden", admin:"🔐 Admin", usernamePlaceholder:"Benutzername" },
+        pt: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ Aceito os termos e condições", joinBtn:"🚀 Entrar", requestCoins:"➕ Pedir moedas", changeLang:"🌐 Mudar idioma", onlineUsers:"📡 Online", globalChat:"💬 Chat Global", send:"Enviar", call:"📹", wall:"📸 Mural", upload:"📤 Enviar", logout:"🚪 Sair", admin:"🔐 Admin", usernamePlaceholder:"Nome de usuário" },
+        it: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ Accetto i termini e condizioni", joinBtn:"🚀 Accedi", requestCoins:"➕ Richiedi monete", changeLang:"🌐 Cambia lingua", onlineUsers:"📡 Online", globalChat:"💬 Chat Globale", send:"Invia", call:"📹", wall:"📸 Bacheca", upload:"📤 Carica", logout:"🚪 Esci", admin:"🔐 Admin", usernamePlaceholder:"Nome utente" },
+        zh: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ 我接受条款和条件", joinBtn:"🚀 登录", requestCoins:"➕ 请求硬币", changeLang:"🌐 更改语言", onlineUsers:"📡 在线", globalChat:"💬 全球聊天", send:"发送", call:"📹", wall:"📸 墙", upload:"📤 上传", logout:"🚪 退出", admin:"🔐 管理员", usernamePlaceholder:"用户名" },
+        ja: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ 利用規約に同意します", joinBtn:"🚀 ログイン", requestCoins:"➕ コインをリクエスト", changeLang:"🌐 言語変更", onlineUsers:"📡 オンライン", globalChat:"💬 グローバルチャット", send:"送信", call:"📹", wall:"📸 ウォール", upload:"📤 アップロード", logout:"🚪 ログアウト", admin:"🔐 管理者", usernamePlaceholder:"ユーザー名" },
+        ar: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ أوافق على الشروط والأحكام", joinBtn:"🚀 دخول", requestCoins:"➕ طلب عملات", changeLang:"🌐 تغيير اللغة", onlineUsers:"📡 متصل", globalChat:"💬 دردشة عامة", send:"إرسال", call:"📹", wall:"📸 الحائط", upload:"📤 رفع", logout:"🚪 تسجيل خروج", admin:"🔐 مدير", usernamePlaceholder:"اسم المستخدم" },
+        ru: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ Я принимаю условия", joinBtn:"🚀 Войти", requestCoins:"➕ Запросить монеты", changeLang:"🌐 Сменить язык", onlineUsers:"📡 Онлайн", globalChat:"💬 Общий чат", send:"Отправить", call:"📹", wall:"📸 Стена", upload:"📤 Загрузить", logout:"🚪 Выйти", admin:"🔐 Админ", usernamePlaceholder:"Имя пользователя" },
+        ko: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ 이용약관에 동의합니다", joinBtn:"🚀 로그인", requestCoins:"➕ 코인 요청", changeLang:"🌐 언어 변경", onlineUsers:"📡 온라인", globalChat:"💬 글로벌 채팅", send:"보내기", call:"📹", wall:"📸 벽", upload:"📤 업로드", logout:"🚪 로그아웃", admin:"🔐 관리자", usernamePlaceholder:"사용자 이름" },
+        hi: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ मैं नियमों और शर्तों को स्वीकार करता हूं", joinBtn:"🚀 लॉगिन करें", requestCoins:"➕ सिक्के मांगें", changeLang:"🌐 भाषा बदलें", onlineUsers:"📡 ऑनलाइन", globalChat:"💬 वैश्विक चैट", send:"भेजें", call:"📹", wall:"📸 दीवार", upload:"📤 अपलोड करें", logout:"🚪 लॉगआउट", admin:"🔐 प्रशासक", usernamePlaceholder:"उपयोगकर्ता नाम" }
     };
     
     let userLanguage = 'es';
@@ -644,17 +655,20 @@
         };
     });
     
-    // Checkbox
-    const acceptTermsCheck = document.getElementById('acceptTerms');
+    // Checkbox verde y validación
+    const acceptTerms = document.getElementById('acceptTerms');
     const acceptTermsLabel = document.getElementById('acceptTermsLabel');
     const joinBtnEl = document.getElementById('joinBtn');
     const errorMsgDiv = document.getElementById('errorMsg');
     
-    if(acceptTermsCheck) {
-        acceptTermsCheck.onchange = () => {
-            if(acceptTermsCheck.checked) {
+    if(acceptTerms) {
+        acceptTerms.onchange = () => {
+            if(acceptTerms.checked) {
                 acceptTermsLabel.classList.add('checked');
                 if(joinBtnEl) joinBtnEl.disabled = false;
+                if(errorMsgDiv && errorMsgDiv.innerText === '❌ Debes aceptar los términos y condiciones') {
+                    errorMsgDiv.innerText = '';
+                }
             } else {
                 acceptTermsLabel.classList.remove('checked');
                 if(joinBtnEl) joinBtnEl.disabled = true;
@@ -716,17 +730,7 @@
         });
     }
     
-    function getLanguageFlag(langCode) {
-        const flags = {
-            'es': '🇪🇸', 'en': '🇺🇸', 'fr': '🇫🇷', 'de': '🇩🇪', 'pt': '🇵🇹', 'it': '🇮🇹',
-            'zh': '🇨🇳', 'ja': '🇯🇵', 'ar': '🇸🇦', 'ru': '🇷🇺', 'ko': '🇰🇷', 'hi': '🇮🇳',
-            'nl': '🇳🇱', 'sv': '🇸🇪', 'pl': '🇵🇱', 'tr': '🇹🇷', 'el': '🇬🇷', 'he': '🇮🇱',
-            'th': '🇹🇭', 'vi': '🇻🇳'
-        };
-        return flags[langCode] || '🌐';
-    }
-    
-    // FUNCIÓN DE TRADUCCIÓN SIMPLIFICADA
+    // FUNCIÓN DE TRADUCCIÓN MEJORADA - CORREGIDA
     async function translateText(text, targetLang, sourceLang = 'es') {
         if (!text || !targetLang) return text;
         if (targetLang === sourceLang) return text;
@@ -737,13 +741,16 @@
         }
         
         try {
-            const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`;
+            const pair = `${sourceLang}|${targetLang}`;
+            const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${pair}&de=admin@miluchat.com`;
+            
             const response = await fetch(url);
             const data = await response.json();
             
             let translatedText = data.responseData.translatedText;
             
             if (translatedText && translatedText !== text) {
+                // Limpiar el texto traducido
                 translatedText = translatedText.replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, '&');
                 translationCache.set(cacheKey, translatedText);
                 return translatedText;
@@ -754,6 +761,17 @@
             console.error('Error en traducción:', error);
             return text;
         }
+    }
+    
+    // Función para obtener el nombre del idioma
+    function getLanguageFlag(langCode) {
+        const flags = {
+            'es': '🇪🇸', 'en': '🇺🇸', 'fr': '🇫🇷', 'de': '🇩🇪', 'pt': '🇵🇹', 'it': '🇮🇹',
+            'zh': '🇨🇳', 'ja': '🇯🇵', 'ar': '🇸🇦', 'ru': '🇷🇺', 'ko': '🇰🇷', 'hi': '🇮🇳',
+            'nl': '🇳🇱', 'sv': '🇸🇪', 'pl': '🇵🇱', 'tr': '🇹🇷', 'el': '🇬🇷', 'he': '🇮🇱',
+            'th': '🇹🇭', 'vi': '🇻🇳'
+        };
+        return flags[langCode] || '🌐';
     }
     
     function playSound() {
@@ -782,7 +800,7 @@
         });
     }
     
-    // Audio recording
+    // Audio recording function
     async function startAudioRecording() {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -923,22 +941,22 @@
     }
     if(mobileOverlay) mobileOverlay.onclick = closeMenus;
     
-    // FUNCIÓN PARA AGREGAR MENSAJE - CORREGIDA
+    // FUNCIÓN PRINCIPAL PARA AGREGAR MENSAJE CON TRADUCCIÓN AUTOMÁTICA - CORREGIDA
     async function addMessageToDOM(data, isOwn) {
-        console.log('Agregando mensaje:', data);
-        
         const div = document.createElement('div');
         div.className = `message ${isOwn ? 'own' : ''}`;
         
         let displayText = data.text;
         const messageOriginalLang = data.originalLang || 'es';
         
-        // Traducción automática
+        // TRADUCCIÓN AUTOMÁTICA: Si NO es mi mensaje Y el idioma del mensaje es diferente al mío
         if (!isOwn && userLanguage !== messageOriginalLang) {
             try {
+                console.log(`Traduciendo: "${data.text}" de ${messageOriginalLang} a ${userLanguage}`);
                 displayText = await translateText(data.text, userLanguage, messageOriginalLang);
+                console.log(`Traducción: "${displayText}"`);
             } catch(e) {
-                console.error('Error en traducción:', e);
+                console.error('Error en traducción automática:', e);
                 displayText = data.text;
             }
         }
@@ -949,7 +967,7 @@
                 <div class="message-username">
                     <span>${escapeHtml(data.username)}</span>
                     ${getGenderBadge(data.gender)}
-                    ${!isOwn && userLanguage !== messageOriginalLang ? `<span class="translation-badge" title="Traducido">🌐</span>` : ''}
+                    ${!isOwn && userLanguage !== messageOriginalLang ? `<span class="translation-badge" title="Traducido de ${messageOriginalLang}">🌐</span>` : ''}
                     <span class="translation-badge">${getLanguageFlag(messageOriginalLang)}</span>
                 </div>
                 <span>${new Date(data.timestamp).toLocaleTimeString()}</span>
@@ -963,14 +981,14 @@
         }
         
         playSound();
-        
         if (!isOwn && document.hidden) showNotification(data.username, displayText);
         
         const delBtn = div.querySelector('.delete-msg');
         if (delBtn) delBtn.onclick = () => { if(confirm('¿Eliminar mensaje?')) socket.emit('delete message', { messageId: data.id }); };
     }
     
-    function addSystemMessage(text) {
+    function addSystemMessage(text, showInChat = true) {
+        if(!showInChat) return;
         const div = document.createElement('div');
         div.className = 'system-message';
         div.innerText = text;
@@ -1284,7 +1302,7 @@
     
     socket.on('call-reject', ({ from }) => {
         if(!callEnded) {
-            addSystemMessage(`📹 ${from} rechazó la llamada`);
+            addSystemMessage(`📹 ${from} rechazó la llamada`, true);
             endCall(false);
         }
     });
@@ -1295,7 +1313,7 @@
         }
     });
     
-    socket.on('audio message', (data) => {
+    socket.on('audio message', async (data) => {
         if (currentRoom === 'global') {
             addAudioMessageToDOM(data, data.username === currentUsername);
         }
@@ -1303,7 +1321,7 @@
     
     socket.on('coins update', updateCoins);
     
-    // Chat privado simplificado
+    // Chat privado
     function openPrivateChat(targetUser) {
         if (targetUser === currentUsername) return;
         if (floatingWindows.has(targetUser)) {
@@ -1315,7 +1333,7 @@
             return;
         }
         
-        socket.emit('start private chat', { targetUsername: targetUser }, (resp) => {
+        socket.emit('start private chat', { targetUsername: targetUser }, async (resp) => {
             if (!resp.success) { alert(resp.error); return; }
             const roomName = resp.roomName;
             const floatingDiv = document.createElement('div');
@@ -1323,20 +1341,86 @@
             floatingDiv.innerHTML = `
                 <div class="floating-header">
                     <span>💬 ${escapeHtml(targetUser)}</span>
-                    <div><button class="minimize-float">−</button><button class="close-float">✖</button></div>
+                    <div><button class="call-private-btn">📹</button><button class="minimize-float">−</button><button class="close-float">✖</button></div>
                 </div>
                 <div class="floating-messages"></div>
+                <div class="floating-emoji-row"></div>
                 <div class="floating-input-wrapper">
                     <input type="text" placeholder="Mensaje...">
                     <button class="send-private-btn">Enviar</button>
+                    <button class="audio-private-btn">🎤</button>
                 </div>
             `;
             document.body.appendChild(floatingDiv);
             const messagesFloat = floatingDiv.querySelector('.floating-messages');
             const inputFloat = floatingDiv.querySelector('input');
             const sendFloatBtn = floatingDiv.querySelector('.send-private-btn');
+            const audioPrivateBtn = floatingDiv.querySelector('.audio-private-btn');
             const minimizeBtn = floatingDiv.querySelector('.minimize-float');
             const closeBtn = floatingDiv.querySelector('.close-float');
+            const callPrivateBtn = floatingDiv.querySelector('.call-private-btn');
+            const floatEmojiRow = floatingDiv.querySelector('.floating-emoji-row');
+            
+            let privateMediaRecorder = null;
+            let privateAudioChunks = [];
+            let privateIsRecording = false;
+            
+            if(audioPrivateBtn) {
+                audioPrivateBtn.onclick = async () => {
+                    if(privateIsRecording) {
+                        if(privateMediaRecorder) privateMediaRecorder.stop();
+                        privateIsRecording = false;
+                        audioPrivateBtn.textContent = '🎤';
+                        audioPrivateBtn.style.background = '';
+                    } else {
+                        try {
+                            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                            privateMediaRecorder = new MediaRecorder(stream);
+                            privateAudioChunks = [];
+                            
+                            privateMediaRecorder.ondataavailable = (event) => {
+                                privateAudioChunks.push(event.data);
+                            };
+                            
+                            privateMediaRecorder.onstop = async () => {
+                                const audioBlob = new Blob(privateAudioChunks, { type: 'audio/webm' });
+                                const reader = new FileReader();
+                                reader.onloadend = () => {
+                                    const audioData = reader.result;
+                                    socket.emit('audio message', { audioData, room: roomName });
+                                };
+                                reader.readAsDataURL(audioBlob);
+                                stream.getTracks().forEach(track => track.stop());
+                            };
+                            
+                            privateMediaRecorder.start();
+                            privateIsRecording = true;
+                            audioPrivateBtn.textContent = '⏹️';
+                            audioPrivateBtn.style.background = '#ef4444';
+                            
+                            setTimeout(() => {
+                                if(privateIsRecording && privateMediaRecorder) {
+                                    privateMediaRecorder.stop();
+                                    privateIsRecording = false;
+                                    audioPrivateBtn.textContent = '🎤';
+                                    audioPrivateBtn.style.background = '';
+                                }
+                            }, 30000);
+                        } catch(err) {
+                            console.error('Error al grabar audio privado:', err);
+                            alert('No se pudo acceder al micrófono');
+                        }
+                    }
+                };
+            }
+            
+            emojis.forEach(emo => {
+                const span = document.createElement('span');
+                span.className = 'emoji-item';
+                span.textContent = emo;
+                span.onclick = () => { if(inputFloat) inputFloat.value += emo; };
+                if(floatEmojiRow) floatEmojiRow.appendChild(span);
+            });
             
             let isDragging = false, offsetX, offsetY;
             const header = floatingDiv.querySelector('.floating-header');
@@ -1364,6 +1448,13 @@
                     floatingDiv.remove();
                     floatingWindows.delete(targetUser);
                     if (floatingDiv.privateHandler) socket.off('private message', floatingDiv.privateHandler);
+                    if (floatingDiv.audioHandler) socket.off('audio message', floatingDiv.audioHandler);
+                };
+            }
+            if(callPrivateBtn) {
+                callPrivateBtn.onclick = () => {
+                    const mins = prompt('Duración en minutos (2,4,6...)', '2');
+                    if (mins && !isNaN(mins) && mins > 0) startCall(targetUser, parseInt(mins));
                 };
             }
             
@@ -1376,7 +1467,7 @@
             if(sendFloatBtn) sendFloatBtn.onclick = sendPrivate;
             if(inputFloat) {
                 inputFloat.onkeypress = (e) => {
-                    if (e.key === 'Enter') {
+                    if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
                         sendPrivate();
                     }
@@ -1400,7 +1491,7 @@
                             <div class="message-username">
                                 <span>${escapeHtml(data.username)}</span>
                                 ${getGenderBadge(data.gender)}
-                                ${data.username !== currentUsername && userLanguage !== msgOriginalLang ? `<span class="translation-badge">🌐</span>` : ''}
+                                ${data.username !== currentUsername && userLanguage !== msgOriginalLang ? `<span class="translation-badge" title="Traducido">🌐</span>` : ''}
                                 <span class="translation-badge">${getLanguageFlag(msgOriginalLang)}</span>
                             </div>
                             <span>${new Date(data.timestamp).toLocaleTimeString()}</span>
@@ -1414,16 +1505,52 @@
                 }
             };
             
+            const privateAudioHandler = (data) => {
+                if (data.username === targetUser || data.username === currentUsername) {
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = `message ${data.username === currentUsername ? 'own' : ''}`;
+                    msgDiv.innerHTML = `
+                        <div class="message-bubble">
+                            <div class="audio-message">
+                                <button class="audio-play-btn" data-audio="${data.audioData}">▶️</button>
+                                <span>🎤 Mensaje de voz</span>
+                            </div>
+                        </div>
+                        <div class="message-info">
+                            <div class="message-username">
+                                <span>${escapeHtml(data.username)}</span>
+                                ${getGenderBadge(data.gender)}
+                                <span class="translation-badge">${getLanguageFlag(data.originalLang)}</span>
+                            </div>
+                            <span>${new Date(data.timestamp).toLocaleTimeString()}</span>
+                        </div>
+                    `;
+                    if(messagesFloat) {
+                        messagesFloat.appendChild(msgDiv);
+                        messagesFloat.scrollTop = messagesFloat.scrollHeight;
+                    }
+                    const playBtn = msgDiv.querySelector('.audio-play-btn');
+                    if(playBtn) {
+                        playBtn.onclick = () => {
+                            const audio = new Audio(playBtn.dataset.audio);
+                            audio.play();
+                        };
+                    }
+                    playSound();
+                }
+            };
+            
             socket.on('private message', privateMessageHandler);
+            socket.on('audio message', privateAudioHandler);
             floatingDiv.privateHandler = privateMessageHandler;
-            floatingWindows.set(targetUser, { div: floatingDiv, roomName, handler: privateMessageHandler });
+            floatingDiv.audioHandler = privateAudioHandler;
+            floatingWindows.set(targetUser, { div: floatingDiv, roomName, handler: privateMessageHandler, audioHandler: privateAudioHandler });
         });
     }
     
     function sendTextMessage(text = null) {
         let msg = text !== null ? text : (messageInput ? messageInput.value.trim() : '');
         if (!msg) return;
-        console.log('Enviando mensaje:', msg);
         socket.emit('chat message', { text: msg, room: currentRoom });
         if (text === null && messageInput) messageInput.value = '';
     }
@@ -1431,23 +1558,20 @@
     function escapeHtml(str) { return String(str).replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
     
     // Socket events
-    socket.on('global history', (msgs) => {
-        console.log('Historial global recibido:', msgs);
-        if(messagesContainer) messagesContainer.innerHTML = '';
-        msgs.forEach(m => {
+    socket.on('global history', async (msgs) => {
+        for (const m of msgs) {
             if(m.text) addMessageToDOM(m, m.username === currentUsername);
             else if(m.audioData) addAudioMessageToDOM(m, m.username === currentUsername);
-        });
+        }
     });
     
     socket.on('chat message', (data) => { 
-        console.log('Mensaje recibido:', data);
         if (currentRoom === 'global') {
             addMessageToDOM(data, data.username === currentUsername);
         }
     });
     
-    socket.on('system message', (data) => addSystemMessage(data.text));
+    socket.on('system message', (data) => addSystemMessage(data.text, true));
     socket.on('user list', updateUsersList);
     socket.on('media posts update', (posts) => { mediaPosts = posts; renderMediaWall(); });
     socket.on('message deleted', (id) => { 
@@ -1494,16 +1618,18 @@
         }
     });
     
-    // Cambiar idioma
+    // Cambiar idioma - RECARGAR MENSAJES TRADUCIDOS
     const changeLangBtns = document.querySelectorAll('#changeLangBtn, #changeLangBtn2');
     changeLangBtns.forEach(btn => {
         if(btn) {
             btn.onclick = () => {
-                const newLang = prompt('🌐 Cambiar idioma a (es, en, fr, de, pt, it, zh, ja, ar, ru, ko, hi):', userLanguage);
+                const langOptions = 'es, en, fr, de, pt, it, zh, ja, ar, ru, ko, hi, nl, sv, pl, tr, el, he, th, vi';
+                const newLang = prompt(`🌐 Cambiar idioma a (${langOptions}):`, userLanguage);
                 if (newLang && translations[newLang]) {
                     userLanguage = newLang;
                     applyUILanguage(newLang);
-                    addSystemMessage(`✨ Idioma cambiado a ${newLang}. Los mensajes se traducirán automáticamente.`);
+                    addSystemMessage(`✨ Idioma cambiado a ${newLang}. Los mensajes se traducirán automáticamente.`, true);
+                    // Recargar mensajes para aplicar nueva traducción
                     if(messagesContainer) messagesContainer.innerHTML = '';
                     socket.emit('global history', (msgs) => {
                         msgs.forEach(m => {
@@ -1512,7 +1638,7 @@
                         });
                     });
                 } else if(newLang) {
-                    alert('❌ Idioma no soportado');
+                    alert(`❌ Idioma no soportado. Usa: ${langOptions}`);
                 }
             };
         }
@@ -1552,22 +1678,158 @@
         };
     }
     
-    // Admin login simplificado
+    // Admin login
+    function setupAdminPanel(containerId) {
+        const container = document.getElementById(containerId);
+        if(!container) return;
+        
+        container.style.display = 'block';
+        container.innerHTML = `
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <h4>👑 Panel Admin</h4>
+                <button class="closeAdminBtn" style="background:var(--danger); border:none; color:white; padding:2px 10px; border-radius:8px; cursor:pointer;">✖</button>
+            </div>
+            <div id="adminRequestsList_${containerId}"></div>
+            <h5 style="margin-top:10px;">💰 Dar monedas</h5>
+            <input type="text" id="adminGiveUser_${containerId}" placeholder="Nombre usuario" style="width:100%; padding:8px; margin:5px 0; border-radius:8px; border:none;">
+            <input type="number" id="adminGiveAmount_${containerId}" min="1" max="12" placeholder="Cantidad" style="width:100%; padding:8px; margin:5px 0; border-radius:8px; border:none;">
+            <button id="adminGiveCoinsBtn_${containerId}" style="background:var(--success); border:none; padding:8px; border-radius:8px; color:white; cursor:pointer; width:100%; margin:5px 0;">✅ Dar monedas</button>
+            <h5 style="margin-top:10px;">🚫 Bloquear/Desbloquear</h5>
+            <input type="text" id="adminBlockUser_${containerId}" placeholder="Nombre usuario" style="width:100%; padding:8px; margin:5px 0; border-radius:8px; border:none;">
+            <button id="adminBlockBtn_${containerId}" style="background:var(--danger); border:none; padding:8px; border-radius:8px; color:white; cursor:pointer; width:48%; margin:5px 1%;">🔨 Bloquear</button>
+            <button id="adminUnblockBtn_${containerId}" style="background:var(--accent); border:none; padding:8px; border-radius:8px; color:white; cursor:pointer; width:48%; margin:5px 1%;">🔓 Desbloquear</button>
+        `;
+        
+        const closeBtn = container.querySelector('.closeAdminBtn');
+        if(closeBtn) {
+            closeBtn.onclick = () => {
+                container.style.display = 'none';
+                isAdmin = false;
+            };
+        }
+        
+        const giveCoinsBtn = document.getElementById(`adminGiveCoinsBtn_${containerId}`);
+        if(giveCoinsBtn) {
+            giveCoinsBtn.onclick = () => {
+                const target = document.getElementById(`adminGiveUser_${containerId}`)?.value.trim();
+                const amount = parseInt(document.getElementById(`adminGiveAmount_${containerId}`)?.value);
+                if (target && amount && amount > 0 && amount <= 12) {
+                    socket.emit('admin give coins', { targetUsername: target, amount }, (res) => {
+                        alert(res.success ? `✅ ${amount} monedas enviadas a ${target}` : `❌ ${res.error}`);
+                        if(res.success) {
+                            document.getElementById(`adminGiveUser_${containerId}`).value = '';
+                            document.getElementById(`adminGiveAmount_${containerId}`).value = '';
+                        }
+                    });
+                } else {
+                    alert('❌ Ingresa nombre y cantidad válida (1-12)');
+                }
+            };
+        }
+        
+        const blockBtn = document.getElementById(`adminBlockBtn_${containerId}`);
+        if(blockBtn) {
+            blockBtn.onclick = () => {
+                const user = document.getElementById(`adminBlockUser_${containerId}`)?.value.trim();
+                if (user) {
+                    socket.emit('admin toggle block', { targetUsername: user, block: true }, (res) => {
+                        alert(res.success ? `✅ Usuario ${user} bloqueado` : `❌ ${res.error}`);
+                        if(res.success) document.getElementById(`adminBlockUser_${containerId}`).value = '';
+                    });
+                } else {
+                    alert('❌ Ingresa nombre de usuario');
+                }
+            };
+        }
+        
+        const unblockBtn = document.getElementById(`adminUnblockBtn_${containerId}`);
+        if(unblockBtn) {
+            unblockBtn.onclick = () => {
+                const user = document.getElementById(`adminBlockUser_${containerId}`)?.value.trim();
+                if (user) {
+                    socket.emit('admin toggle block', { targetUsername: user, block: false }, (res) => {
+                        alert(res.success ? `✅ Usuario ${user} desbloqueado` : `❌ ${res.error}`);
+                        if(res.success) document.getElementById(`adminBlockUser_${containerId}`).value = '';
+                    });
+                } else {
+                    alert('❌ Ingresa nombre de usuario');
+                }
+            };
+        }
+        
+        const updateRequests = (requests) => {
+            const listContainer = document.getElementById(`adminRequestsList_${containerId}`);
+            if(!listContainer) return;
+            listContainer.innerHTML = '';
+            if (!requests || requests.length === 0) { 
+                listContainer.innerHTML = '<div style="color:#888; text-align:center;">📭 No hay solicitudes pendientes</div>'; 
+                return; 
+            }
+            requests.forEach((req, idx) => {
+                const div = document.createElement('div');
+                div.style.cssText = 'background:var(--bg-chat); padding:8px; margin:5px 0; border-radius:8px;';
+                div.innerHTML = `
+                    <strong>👤 ${escapeHtml(req.from)}</strong> pide ${req.amount} monedas
+                    <div style="margin-top:5px;">
+                        <button class="admin-give-req" data-idx="${idx}" style="background:var(--success); border:none; padding:4px 12px; border-radius:6px; color:white; cursor:pointer; margin-right:5px;">✅ Dar</button>
+                        <button class="admin-deny-req" data-idx="${idx}" style="background:var(--danger); border:none; padding:4px 12px; border-radius:6px; color:white; cursor:pointer;">❌ Denegar</button>
+                    </div>
+                `;
+                listContainer.appendChild(div);
+            });
+            
+            listContainer.querySelectorAll('.admin-give-req').forEach(btn => {
+                btn.onclick = () => socket.emit('admin resolve request', { requestIndex: parseInt(btn.dataset.idx), giveCoins: true });
+            });
+            listContainer.querySelectorAll('.admin-deny-req').forEach(btn => {
+                btn.onclick = () => socket.emit('admin resolve request', { requestIndex: parseInt(btn.dataset.idx), giveCoins: false });
+            });
+        };
+        
+        return updateRequests;
+    }
+    
     const adminBtns = document.querySelectorAll('#adminLoginBtn, #adminLoginBtn2, #adminLoginBtnMobile');
+    let adminUpdateFunctions = [];
     
     adminBtns.forEach(btn => {
         if(btn) {
             btn.onclick = () => {
                 const pwd = prompt('🔐 Contraseña de administrador:');
-                if (pwd === '2016') {
-                    alert('✅ Modo administrador activado');
-                    isAdmin = true;
-                    const adminPanels = document.querySelectorAll('#adminPanel2, #adminPanelMobile');
-                    adminPanels.forEach(panel => {
-                        if(panel) panel.style.display = 'block';
+                if (pwd) {
+                    socket.emit('admin login', pwd, (success) => {
+                        if (success) {
+                            isAdmin = true;
+                            const panels = ['adminPanel2', 'adminPanelMobile'];
+                            adminUpdateFunctions = [];
+                            
+                            panels.forEach(panelId => {
+                                const panel = document.getElementById(panelId);
+                                if(panel) {
+                                    const updateFunc = setupAdminPanel(panelId);
+                                    if(updateFunc) adminUpdateFunctions.push(updateFunc);
+                                }
+                            });
+                            
+                            socket.emit('admin pending requests', (requests) => {
+                                adminUpdateFunctions.forEach(fn => fn(requests));
+                            });
+                            
+                            socket.on('admin pending requests', (requests) => {
+                                adminUpdateFunctions.forEach(fn => fn(requests));
+                            });
+                            
+                            socket.on('new coin request', () => {
+                                socket.emit('admin pending requests', (requests) => {
+                                    adminUpdateFunctions.forEach(fn => fn(requests));
+                                });
+                            });
+                            
+                            addSystemMessage('👑 Modo administrador activado', true);
+                        } else {
+                            alert('❌ Contraseña incorrecta');
+                        }
                     });
-                } else if(pwd) {
-                    alert('❌ Contraseña incorrecta');
                 }
             };
         }
@@ -1589,7 +1851,7 @@
                 updateCoins(data.coins);
                 updateMyName(username);
                 updateMyGenderBadge(gender);
-                addSystemMessage(`✨ Bienvenido ${username} ${gender === 'male' ? '👨' : '👩'} (${country}). Tienes ${data.coins} monedas.`);
+                addSystemMessage(`✨ Bienvenido ${username} ${gender === 'male' ? '👨' : '👩'} (${country}). Tienes ${data.coins} monedas.`, true);
             } else if(errorMsgDiv) {
                 errorMsgDiv.innerText = data;
             }
@@ -1625,7 +1887,7 @@
                 errorMsgDiv.innerText = '❌ Selecciona tu género (Hombre o Mujer)';
                 return;
             }
-            if(!acceptTermsCheck || !acceptTermsCheck.checked) {
+            if(!acceptTerms || !acceptTerms.checked) {
                 errorMsgDiv.innerText = '❌ Debes aceptar los términos y condiciones';
                 return;
             }
