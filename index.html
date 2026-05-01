@@ -20,22 +20,17 @@
             --danger: #ef4444;
             --success: #22c55e;
             --warning: #f59e0b;
-            --male-color: #3b82f6;
-            --female-color: #ec4898;
         }
-        body { background: var(--bg-dark); height: 100vh; display: flex; justify-content: center; align-items: center; margin: 0; padding: 0; overflow: hidden; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg-dark); height: 100vh; display: flex; justify-content: center; align-items: center; margin: 0; padding: 0; overflow: hidden; }
         
         .welcome-screen {
             background: var(--bg-sidebar);
-            max-width: 450px;
-            width: 95%;
+            max-width: 400px;
+            width: 90%;
             padding: 1.5rem;
             border-radius: 24px;
             text-align: center;
             box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
-            max-height: 90vh;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
         }
         .welcome-screen select, .welcome-screen input, .welcome-screen button {
             width: 100%;
@@ -45,116 +40,32 @@
             border: none;
             background: var(--bg-chat);
             color: var(--text-primary);
-            font-size: 14px;
-            -webkit-appearance: none;
-            appearance: none;
+            font-size: 16px;
         }
         .welcome-screen button { background: var(--accent); cursor: pointer; font-weight: bold; transition: background 0.2s; }
-        .gender-options {
-            display: flex;
-            gap: 12px;
-            margin: 10px 0;
-        }
-        .gender-option {
-            flex: 1;
-            padding: 12px;
-            border-radius: 12px;
-            background: var(--bg-chat);
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.2s;
-            border: 2px solid transparent;
-        }
-        .gender-option.selected {
-            border-color: var(--accent);
-            background: var(--accent);
-        }
-        .gender-option.male.selected { background: var(--male-color); }
-        .gender-option.female.selected { background: var(--female-color); }
-        .gender-icon { font-size: 24px; display: block; }
-        
-        .terms-box {
-            font-size: 0.7rem;
-            margin: 10px 0;
-            text-align: left;
-            max-height: 120px;
-            overflow-y: auto;
-            background: var(--bg-chat);
-            padding: 10px;
-            border-radius: 12px;
-            -webkit-overflow-scrolling: touch;
-            color: var(--text-primary);
-            line-height: 1.4;
-        }
-        .terms-box strong {
-            color: var(--accent);
-            display: block;
-            margin-bottom: 6px;
-        }
-        .terms-box p {
-            margin-bottom: 4px;
-        }
-        
-        .accept-terms-label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 10px 0;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 8px;
-            background: var(--bg-chat);
-        }
-        .accept-terms-label input {
-            width: auto;
-            margin: 0;
-            transform: scale(1.2);
-        }
-        .accept-terms-label.checked {
-            border-left: 3px solid var(--success);
-        }
+        .terms-box { font-size: 0.75rem; margin: 10px 0; text-align: left; max-height: 130px; overflow-y: auto; background: var(--bg-chat); padding: 8px; border-radius: 12px; }
         
         .chat-app { display: none; width: 100%; height: 100vh; background: var(--bg-sidebar); position: fixed; top: 0; left: 0; }
         .app-grid { display: grid; grid-template-columns: 260px 1fr 260px; height: 100%; transition: all 0.3s; }
         
-        .left-panel { background: #1a1e24; border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        .left-panel { background: #1a1e24; border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
         .my-info { padding: 16px; text-align: center; border-bottom: 1px solid var(--border); }
         .my-coins { font-size: 1.4rem; color: gold; margin: 8px 0; }
-        .user-name-with-gender {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        .gender-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .gender-badge.male { background: var(--male-color); color: white; }
-        .gender-badge.female { background: var(--female-color); color: white; }
-        
         .btn-sm { background: var(--warning); border: none; padding: 8px; border-radius: 40px; color: white; cursor: pointer; width: 100%; margin-top: 6px; font-size: 14px; }
         .online-users { padding: 12px; }
         .user-online { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 40px; background: var(--bg-chat); margin: 6px 0; cursor: pointer; }
         .status-dot { width: 10px; height: 10px; background: #22c55e; border-radius: 50%; display: inline-block; }
-        .user-gender-icon { font-size: 14px; margin-left: 4px; }
         
         .center-area { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); overflow: hidden; }
         .chat-column, .wall-column { background: var(--bg-chat); display: flex; flex-direction: column; overflow: hidden; }
         .chat-header { padding: 12px; background: var(--bg-sidebar); border-bottom: 1px solid var(--border); font-weight: bold; }
-        .messages-container { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; -webkit-overflow-scrolling: touch; }
+        .messages-container { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
         
-        .emoji-row { display: flex; gap: 6px; padding: 6px 12px; background: var(--bg-sidebar); overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .emoji-row { display: flex; gap: 6px; padding: 6px 12px; background: var(--bg-sidebar); overflow-x: auto; }
         .emoji-item { font-size: 1.2rem; cursor: pointer; padding: 4px; }
         
         .input-fixed { padding: 8px 12px; background: var(--bg-sidebar); display: flex; gap: 8px; border-top: 1px solid var(--border); flex-wrap: wrap; }
-        .input-fixed textarea { flex: 1; border: none; border-radius: 20px; padding: 10px; background: var(--bg-chat); color: var(--text-primary); resize: none; font-size: 16px; min-width: 120px; font-family: inherit; }
+        .input-fixed textarea { flex: 1; border: none; border-radius: 20px; padding: 10px; background: var(--bg-chat); color: var(--text-primary); resize: none; font-size: 16px; min-width: 120px; }
         .input-fixed button { background: var(--accent); border: none; padding: 10px 16px; border-radius: 20px; color: white; cursor: pointer; font-weight: bold; }
         .audio-btn { background: #8b5cf6 !important; }
         .audio-btn.recording { background: #ef4444 !important; animation: pulse 1s infinite; }
@@ -165,7 +76,7 @@
             100% { transform: scale(1); opacity: 1; }
         }
         
-        .media-wall { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; -webkit-overflow-scrolling: touch; }
+        .media-wall { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
         .media-post { background: var(--bg-sidebar); border-radius: 16px; padding: 8px; }
         .media-post img, .media-post video { max-width: 100%; border-radius: 12px; max-height: 200px; width: auto; }
         
@@ -173,13 +84,8 @@
         .message.own { align-self: flex-end; }
         .message-bubble { padding: 8px 14px; border-radius: 18px; background: var(--bubble-other); color: var(--text-primary); word-break: break-word; font-size: 15px; }
         .message.own .message-bubble { background: var(--bubble-own); }
-        .message-info { font-size: 0.65rem; color: #8a98a9; margin: 2px 8px 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px; }
-        .message-username {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .delete-msg { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 0.7rem; margin-left: 8px; padding: 2px 4px; }
+        .message-info { font-size: 0.65rem; color: #8a98a9; margin: 2px 8px 0; display: flex; justify-content: space-between; align-items: center; }
+        .delete-msg { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 0.7rem; margin-left: 8px; }
         .system-message { text-align: center; font-size: 0.7rem; background: #2a2f38; padding: 4px; border-radius: 20px; width: fit-content; margin: 4px auto; color: #8a98a9; }
         .audio-message { display: flex; align-items: center; gap: 10px; }
         .audio-play-btn { background: var(--accent); border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; font-size: 16px; }
@@ -187,15 +93,15 @@
         .floating-chat { position: fixed; bottom: 20px; right: 20px; width: 340px; height: 480px; background: var(--bg-sidebar); border-radius: 16px; display: flex; flex-direction: column; z-index: 1000; border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .floating-header { background: var(--accent); padding: 10px; border-radius: 16px 16px 0 0; display: flex; justify-content: space-between; cursor: move; color: white; }
         .floating-header button { background: none; border: none; color: white; cursor: pointer; font-size: 16px; padding: 0 5px; }
-        .floating-messages { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 8px; -webkit-overflow-scrolling: touch; }
-        .floating-emoji-row { display: flex; gap: 6px; padding: 6px; overflow-x: auto; background: var(--bg-sidebar); -webkit-overflow-scrolling: touch; }
+        .floating-messages { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 8px; }
+        .floating-emoji-row { display: flex; gap: 6px; padding: 6px; overflow-x: auto; background: var(--bg-sidebar); }
         .floating-input-wrapper { display: flex; gap: 6px; padding: 6px; background: var(--bg-sidebar); flex-wrap: wrap; }
-        .floating-input-wrapper input { flex: 1; padding: 10px; border-radius: 20px; border: none; background: var(--bg-chat); color: var(--text-primary); font-size: 14px; min-width: 100px; font-family: inherit; }
+        .floating-input-wrapper input { flex: 1; padding: 10px; border-radius: 20px; border: none; background: var(--bg-chat); color: var(--text-primary); font-size: 14px; min-width: 100px; }
         .floating-input-wrapper button { background: var(--accent); border: none; padding: 8px 12px; border-radius: 20px; color: white; cursor: pointer; }
         .minimized { height: 45px !important; }
         .minimized .floating-messages, .minimized .floating-emoji-row, .minimized .floating-input-wrapper { display: none; }
         
-        .right-panel { background: var(--bg-sidebar); border-left: 1px solid var(--border); padding: 12px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        .right-panel { background: var(--bg-sidebar); border-left: 1px solid var(--border); padding: 12px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
         .admin-panel { background: #1e293b; border-radius: 12px; padding: 12px; margin-top: 12px; }
         
         .call-overlay {
@@ -306,7 +212,6 @@
             z-index: 1001;
             transition: left 0.3s;
             overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
         }
         .mobile-menu.open { left: 0; }
         
@@ -322,6 +227,8 @@
             .floating-chat { width: 95%; right: 2.5%; left: 2.5%; bottom: 10px; height: 70vh; }
             .videos-container { grid-template-columns: 1fr; }
         }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
         .incoming-call-notification {
             position: fixed;
@@ -352,171 +259,41 @@
         }
         .accept-call { background: var(--success); color: white; }
         .reject-call { background: var(--danger); color: white; }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        button:active { transform: scale(0.98); }
-        
-        .checkbox-green {
-            accent-color: var(--success);
-        }
-        
-        .translation-badge {
-            font-size: 10px;
-            opacity: 0.6;
-            margin-left: 5px;
-        }
     </style>
 </head>
 <body>
 <div id="welcomeScreen" class="welcome-screen">
-    <h1 id="welcomeTitle">🌍 MILUCHAT</h1>
-    
-    <label style="text-align:left; display:block; margin-top:10px;">🌐 Tu idioma:</label>
+    <h1 id="welcomeTitle">MILUCHAT</h1>
     <select id="languageSelect">
-        <option value="es">🇪🇸 Español</option>
-        <option value="en">🇺🇸 English</option>
-        <option value="fr">🇫🇷 Français</option>
-        <option value="de">🇩🇪 Deutsch</option>
-        <option value="pt">🇵🇹 Português</option>
-        <option value="it">🇮🇹 Italiano</option>
-        <option value="zh">🇨🇳 中文</option>
-        <option value="ja">🇯🇵 日本語</option>
-        <option value="ar">🇸🇦 العربية</option>
-        <option value="ru">🇷🇺 Русский</option>
-        <option value="ko">🇰🇷 한국어</option>
-        <option value="hi">🇮🇳 हिन्दी</option>
-        <option value="nl">🇳🇱 Nederlands</option>
-        <option value="sv">🇸🇪 Svenska</option>
-        <option value="pl">🇵🇱 Polski</option>
-        <option value="tr">🇹🇷 Türkçe</option>
-        <option value="el">🇬🇷 Ελληνικά</option>
-        <option value="he">🇮🇱 עברית</option>
-        <option value="th">🇹🇭 ไทย</option>
-        <option value="vi">🇻🇳 Tiếng Việt</option>
+        <option value="es" selected>Español</option>
+        <option value="en">English</option>
+        <option value="fr">Français</option>
+        <option value="de">Deutsch</option>
+        <option value="pt">Português</option>
+        <option value="it">Italiano</option>
+        <option value="zh">中文</option>
+        <option value="ja">日本語</option>
     </select>
-    
-    <label style="text-align:left; display:block; margin-top:10px;">📍 Tu país:</label>
     <select id="countrySelect">
-        <optgroup label="🌎 América">
-            <option value="ARG">🇦🇷 Argentina</option>
-            <option value="BOL">🇧🇴 Bolivia</option>
-            <option value="BRA">🇧🇷 Brasil</option>
-            <option value="CHL">🇨🇱 Chile</option>
-            <option value="COL">🇨🇴 Colombia</option>
-            <option value="CRI">🇨🇷 Costa Rica</option>
-            <option value="CUB">🇨🇺 Cuba</option>
-            <option value="ECU">🇪🇨 Ecuador</option>
-            <option value="SLV">🇸🇻 El Salvador</option>
-            <option value="USA">🇺🇸 Estados Unidos</option>
-            <option value="GTM">🇬🇹 Guatemala</option>
-            <option value="HND">🇭🇳 Honduras</option>
-            <option value="MEX">🇲🇽 México</option>
-            <option value="NIC">🇳🇮 Nicaragua</option>
-            <option value="PAN">🇵🇦 Panamá</option>
-            <option value="PRY">🇵🇾 Paraguay</option>
-            <option value="PER">🇵🇪 Perú</option>
-            <option value="URY">🇺🇾 Uruguay</option>
-            <option value="VEN">🇻🇪 Venezuela</option>
-            <option value="CAN">🇨🇦 Canadá</option>
-            <option value="HTI">🇭🇹 Haití</option>
-            <option value="JAM">🇯🇲 Jamaica</option>
-            <option value="DOM">🇩🇴 República Dominicana</option>
-        </optgroup>
-        <optgroup label="🌍 Europa">
-            <option value="DEU">🇩🇪 Alemania</option>
-            <option value="AUT">🇦🇹 Austria</option>
-            <option value="BEL">🇧🇪 Bélgica</option>
-            <option value="ESP">🇪🇸 España</option>
-            <option value="FRA">🇫🇷 Francia</option>
-            <option value="ITA">🇮🇹 Italia</option>
-            <option value="PRT">🇵🇹 Portugal</option>
-            <option value="GBR">🇬🇧 Reino Unido</option>
-            <option value="IRL">🇮🇪 Irlanda</option>
-            <option value="NLD">🇳🇱 Países Bajos</option>
-            <option value="CHE">🇨🇭 Suiza</option>
-            <option value="SWE">🇸🇪 Suecia</option>
-            <option value="NOR">🇳🇴 Noruega</option>
-            <option value="DNK">🇩🇰 Dinamarca</option>
-            <option value="FIN">🇫🇮 Finlandia</option>
-            <option value="ISL">🇮🇸 Islandia</option>
-            <option value="POL">🇵🇱 Polonia</option>
-            <option value="UKR">🇺🇦 Ucrania</option>
-            <option value="RUS">🇷🇺 Rusia</option>
-            <option value="GRC">🇬🇷 Grecia</option>
-            <option value="TUR">🇹🇷 Turquía</option>
-        </optgroup>
-        <optgroup label="🌏 Asia">
-            <option value="CHN">🇨🇳 China</option>
-            <option value="JPN">🇯🇵 Japón</option>
-            <option value="KOR">🇰🇷 Corea del Sur</option>
-            <option value="IND">🇮🇳 India</option>
-            <option value="PAK">🇵🇰 Pakistán</option>
-            <option value="IDN">🇮🇩 Indonesia</option>
-            <option value="THA">🇹🇭 Tailandia</option>
-            <option value="VNM">🇻🇳 Vietnam</option>
-            <option value="PHL">🇵🇭 Filipinas</option>
-            <option value="SAU">🇸🇦 Arabia Saudita</option>
-            <option value="ARE">🇦🇪 Emiratos Árabes</option>
-            <option value="ISR">🇮🇱 Israel</option>
-            <option value="IRN">🇮🇷 Irán</option>
-            <option value="IRQ">🇮🇶 Irak</option>
-            <option value="AFG">🇦🇫 Afganistán</option>
-        </optgroup>
-        <optgroup label="🌍 África">
-            <option value="EGY">🇪🇬 Egipto</option>
-            <option value="MAR">🇲🇦 Marruecos</option>
-            <option value="DZA">🇩🇿 Argelia</option>
-            <option value="ZAF">🇿🇦 Sudáfrica</option>
-            <option value="NGA">🇳🇬 Nigeria</option>
-            <option value="KEN">🇰🇪 Kenia</option>
-            <option value="ETH">🇪🇹 Etiopía</option>
-            <option value="TZA">🇹🇿 Tanzania</option>
-            <option value="GHA">🇬🇭 Ghana</option>
-            <option value="UGA">🇺🇬 Uganda</option>
-        </optgroup>
-        <optgroup label="🌏 Oceanía">
-            <option value="AUS">🇦🇺 Australia</option>
-            <option value="NZL">🇳🇿 Nueva Zelanda</option>
-            <option value="PNG">🇵🇬 Papúa Nueva Guinea</option>
-            <option value="FJI">🇫🇯 Fiyi</option>
-        </optgroup>
+        <option value="COL" selected>Colombia</option>
+        <option value="USA">Estados Unidos</option>
+        <option value="MEX">México</option>
+        <option value="ESP">España</option>
+        <option value="ARG">Argentina</option>
+        <option value="CHL">Chile</option>
+        <option value="FRA">Francia</option>
+        <option value="JPN">Japón</option>
+        <option value="CHN">China</option>
+        <option value="DEU">Alemania</option>
+        <option value="ITA">Italia</option>
+        <option value="BRA">Brasil</option>
     </select>
-    
-    <div class="gender-options">
-        <div class="gender-option male" data-gender="male">
-            <span class="gender-icon">👨</span>
-            <span>Hombre</span>
-        </div>
-        <div class="gender-option female" data-gender="female">
-            <span class="gender-icon">👩</span>
-            <span>Mujer</span>
-        </div>
-    </div>
-    
     <input type="text" id="usernameInput" placeholder="Nombre de usuario">
-    
-    <div class="terms-box" id="termsBox">
-        <strong>📜 TÉRMINOS Y CONDICIONES</strong>
-        <p>✓ Aceptas las reglas de convivencia y respeto mutuo.</p>
-        <p>✓ El contenido subido expira automáticamente en 12 horas.</p>
-        <p>✓ Las monedas se ganan dando likes a contenido.</p>
-        <p>✓ Las videollamadas consumen monedas (1.5 monedas por minuto).</p>
-        <p>✓ No está permitido el contenido ofensivo o inapropiado.</p>
-        <p>✓ La plataforma se reserva el derecho de bloquear usuarios.</p>
-        <p>✓ Los mensajes de audio tienen duración máxima de 30 segundos.</p>
-        <p>✓ Los mensajes se traducen automáticamente a tu idioma.</p>
-    </div>
-    
-    <label class="accept-terms-label" id="acceptTermsLabel">
-        <input type="checkbox" id="acceptTerms" class="checkbox-green">
-        <span>✅ Acepto los términos y condiciones</span>
-    </label>
-    
-    <button id="joinBtn" disabled>🚀 Ingresar</button>
-    <div id="errorMsg" style="color:#ef4444; margin-top:8px; font-size:13px;"></div>
+    <div class="terms-box" id="termsBox"></div>
+    <label><input type="checkbox" id="acceptTerms"> <span id="acceptTermsLabel">Acepto los términos</span></label>
+    <button id="joinBtn">Ingresar</button>
+    <div id="errorMsg" style="color:#ef4444; margin-top:8px;"></div>
 </div>
-
 <div id="chatApp" class="chat-app">
     <div class="mobile-header">
         <button class="hamburger-btn" id="hamburgerBtn">☰</button>
@@ -526,10 +303,7 @@
     <div class="mobile-menu-overlay" id="mobileOverlay"></div>
     <div class="mobile-menu" id="mobileLeftMenu">
         <div class="my-info">
-            <div class="user-name-with-gender">
-                <h3 id="myName">-</h3>
-                <span id="myGenderBadge" class="gender-badge"></span>
-            </div>
+            <h3 id="myName">-</h3>
             <div class="my-coins">💰 <span id="myCoins">0</span></div>
             <button id="requestCoinsBtn" class="btn-sm">➕ Pedir monedas</button>
             <button id="changeLangBtn" class="btn-sm">🌐 Cambiar idioma</button>
@@ -551,10 +325,7 @@
     <div class="app-grid">
         <div class="left-panel">
             <div class="my-info">
-                <div class="user-name-with-gender">
-                    <h3 id="myName2">-</h3>
-                    <span id="myGenderBadge2" class="gender-badge"></span>
-                </div>
+                <h3 id="myName2">-</h3>
                 <div class="my-coins">💰 <span id="myCoins2">0</span></div>
                 <button id="requestCoinsBtn2" class="btn-sm">➕ Pedir monedas</button>
                 <button id="changeLangBtn2" class="btn-sm">🌐 Cambiar idioma</button>
@@ -570,7 +341,7 @@
                 <div id="messagesContainer" class="messages-container"></div>
                 <div class="emoji-row" id="emojiRow"></div>
                 <div class="input-fixed">
-                    <textarea id="messageInput" rows="1" placeholder="Escribe tu mensaje..."></textarea>
+                    <textarea id="messageInput" rows="1" placeholder="Mensaje..."></textarea>
                     <button id="sendBtn">Enviar</button>
                     <button id="audioMsgBtn" class="audio-btn">🎤 Audio</button>
                     <button id="callGlobalBtn" style="background:#10b981;">📹</button>
@@ -587,10 +358,7 @@
         </div>
         <div class="right-panel">
             <div class="my-info" style="padding:12px;">
-                <div class="user-name-with-gender">
-                    <h3 id="myNamePC">-</h3>
-                    <span id="myGenderBadgePC" class="gender-badge"></span>
-                </div>
+                <h3 id="myNamePC">-</h3>
                 <div class="my-coins">💰 <span id="myCoinsPC">0</span></div>
             </div>
             <button id="logoutBtn2" style="background:#ef4444; padding:8px; border-radius:12px; border:none; color:white;">🚪 Cerrar sesión</button>
@@ -601,25 +369,19 @@
 </div>
 
 <script>
-    // Traducciones para la interfaz
     const translations = {
-        es: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ Acepto los términos y condiciones", joinBtn:"🚀 Ingresar", requestCoins:"➕ Pedir monedas", changeLang:"🌐 Cambiar idioma", onlineUsers:"📡 En línea", globalChat:"💬 Chat Global", send:"Enviar", call:"📹", wall:"📸 Muro", upload:"📤 Subir", logout:"🚪 Cerrar sesión", admin:"🔐 Admin", usernamePlaceholder:"Nombre de usuario" },
-        en: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ I accept the terms and conditions", joinBtn:"🚀 Login", requestCoins:"➕ Request coins", changeLang:"🌐 Change language", onlineUsers:"📡 Online", globalChat:"💬 Global Chat", send:"Send", call:"📹", wall:"📸 Wall", upload:"📤 Upload", logout:"🚪 Logout", admin:"🔐 Admin", usernamePlaceholder:"Username" },
-        fr: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ J'accepte les termes et conditions", joinBtn:"🚀 Connexion", requestCoins:"➕ Demander des pièces", changeLang:"🌐 Changer de langue", onlineUsers:"📡 En ligne", globalChat:"💬 Chat Global", send:"Envoyer", call:"📹", wall:"📸 Mur", upload:"📤 Publier", logout:"🚪 Déconnexion", admin:"🔐 Admin", usernamePlaceholder:"Nom d'utilisateur" },
-        de: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ Ich akzeptiere die Allgemeinen Geschäftsbedingungen", joinBtn:"🚀 Einloggen", requestCoins:"➕ Münzen anfordern", changeLang:"🌐 Sprache ändern", onlineUsers:"📡 Online", globalChat:"💬 Globaler Chat", send:"Senden", call:"📹", wall:"📸 Wand", upload:"📤 Hochladen", logout:"🚪 Abmelden", admin:"🔐 Admin", usernamePlaceholder:"Benutzername" },
-        pt: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ Aceito os termos e condições", joinBtn:"🚀 Entrar", requestCoins:"➕ Pedir moedas", changeLang:"🌐 Mudar idioma", onlineUsers:"📡 Online", globalChat:"💬 Chat Global", send:"Enviar", call:"📹", wall:"📸 Mural", upload:"📤 Enviar", logout:"🚪 Sair", admin:"🔐 Admin", usernamePlaceholder:"Nome de usuário" },
-        it: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ Accetto i termini e condizioni", joinBtn:"🚀 Accedi", requestCoins:"➕ Richiedi monete", changeLang:"🌐 Cambia lingua", onlineUsers:"📡 Online", globalChat:"💬 Chat Globale", send:"Invia", call:"📹", wall:"📸 Bacheca", upload:"📤 Carica", logout:"🚪 Esci", admin:"🔐 Admin", usernamePlaceholder:"Nome utente" },
-        zh: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ 我接受条款和条件", joinBtn:"🚀 登录", requestCoins:"➕ 请求硬币", changeLang:"🌐 更改语言", onlineUsers:"📡 在线", globalChat:"💬 全球聊天", send:"发送", call:"📹", wall:"📸 墙", upload:"📤 上传", logout:"🚪 退出", admin:"🔐 管理员", usernamePlaceholder:"用户名" },
-        ja: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ 利用規約に同意します", joinBtn:"🚀 ログイン", requestCoins:"➕ コインをリクエスト", changeLang:"🌐 言語変更", onlineUsers:"📡 オンライン", globalChat:"💬 グローバルチャット", send:"送信", call:"📹", wall:"📸 ウォール", upload:"📤 アップロード", logout:"🚪 ログアウト", admin:"🔐 管理者", usernamePlaceholder:"ユーザー名" },
-        ar: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ أوافق على الشروط والأحكام", joinBtn:"🚀 دخول", requestCoins:"➕ طلب عملات", changeLang:"🌐 تغيير اللغة", onlineUsers:"📡 متصل", globalChat:"💬 دردشة عامة", send:"إرسال", call:"📹", wall:"📸 الحائط", upload:"📤 رفع", logout:"🚪 تسجيل خروج", admin:"🔐 مدير", usernamePlaceholder:"اسم المستخدم" },
-        ru: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ Я принимаю условия", joinBtn:"🚀 Войти", requestCoins:"➕ Запросить монеты", changeLang:"🌐 Сменить язык", onlineUsers:"📡 Онлайн", globalChat:"💬 Общий чат", send:"Отправить", call:"📹", wall:"📸 Стена", upload:"📤 Загрузить", logout:"🚪 Выйти", admin:"🔐 Админ", usernamePlaceholder:"Имя пользователя" },
-        ko: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ 이용약관에 동의합니다", joinBtn:"🚀 로그인", requestCoins:"➕ 코인 요청", changeLang:"🌐 언어 변경", onlineUsers:"📡 온라인", globalChat:"💬 글로벌 채팅", send:"보내기", call:"📹", wall:"📸 벽", upload:"📤 업로드", logout:"🚪 로그아웃", admin:"🔐 관리자", usernamePlaceholder:"사용자 이름" },
-        hi: { welcomeTitle:"🌍 MILUCHAT", acceptTerms:"✅ मैं नियमों और शर्तों को स्वीकार करता हूं", joinBtn:"🚀 लॉगिन करें", requestCoins:"➕ सिक्के मांगें", changeLang:"🌐 भाषा बदलें", onlineUsers:"📡 ऑनलाइन", globalChat:"💬 वैश्विक चैट", send:"भेजें", call:"📹", wall:"📸 दीवार", upload:"📤 अपलोड करें", logout:"🚪 लॉगआउट", admin:"🔐 प्रशासक", usernamePlaceholder:"उपयोगकर्ता नाम" }
+        es: { welcomeTitle:"MILUCHAT", acceptTerms:"Acepto los términos", joinBtn:"Ingresar", requestCoins:"➕ Pedir monedas", changeLang:"🌐 Cambiar idioma", onlineUsers:"📡 En línea", globalChat:"💬 Chat Global", send:"Enviar", call:"📹", wall:"📸 Muro (sube fotos/videos)", upload:"📤 Subir", logout:"🚪 Cerrar sesión", admin:"🔐 Admin", terms:"📜 Términos y condiciones\n1. Aceptas las reglas de convivencia.\n2. El contenido subido expira en 12h.\n3. Las monedas se ganan con likes.\n4. Las videollamadas consumen monedas.", usernamePlaceholder:"Nombre de usuario" },
+        en: { welcomeTitle:"MILUCHAT", acceptTerms:"I accept the terms", joinBtn:"Login", requestCoins:"➕ Request coins", changeLang:"🌐 Change language", onlineUsers:"📡 Online", globalChat:"💬 Global Chat", send:"Send", call:"📹", wall:"📸 Wall (upload photos/videos)", upload:"📤 Upload", logout:"🚪 Logout", admin:"🔐 Admin", terms:"📜 Terms and conditions\n1. You accept coexistence rules.\n2. Uploaded content expires in 12h.\n3. Coins are earned with likes.\n4. Video calls consume coins.", usernamePlaceholder:"Username" },
+        fr: { welcomeTitle:"MILUCHAT", acceptTerms:"J'accepte les conditions", joinBtn:"Connexion", requestCoins:"➕ Demander des pièces", changeLang:"🌐 Changer de langue", onlineUsers:"📡 En ligne", globalChat:"💬 Chat Global", send:"Envoyer", call:"📹", wall:"📸 Mur (publier photos/vidéos)", upload:"📤 Publier", logout:"🚪 Déconnexion", admin:"🔐 Admin", terms:"📜 Conditions générales\n1. Vous acceptez les règles de convivialité.\n2. Le contenu expire après 12h.\n3. Les pièces s'obtiennent avec des likes.\n4. Les appels vidéo consomment des pièces.", usernamePlaceholder:"Nom d'utilisateur" },
+        de: { welcomeTitle:"MILUCHAT", acceptTerms:"Ich akzeptiere die Bedingungen", joinBtn:"Einloggen", requestCoins:"➕ Münzen anfordern", changeLang:"🌐 Sprache ändern", onlineUsers:"📡 Online", globalChat:"💬 Globaler Chat", send:"Senden", call:"📹", wall:"📸 Wand (Fotos/Videos hochladen)", upload:"📤 Hochladen", logout:"🚪 Abmelden", admin:"🔐 Admin", terms:"📜 Allgemeine Geschäftsbedingungen\n1. Sie akzeptieren die Verhaltensregeln.\n2. Hochgeladene Inhalte verfallen nach 12h.\n3. Münzen werden durch Likes verdient.\n4. Videoanrufe verbrauchen Münzen.", usernamePlaceholder:"Benutzername" },
+        pt: { welcomeTitle:"MILUCHAT", acceptTerms:"Aceito os termos", joinBtn:"Entrar", requestCoins:"➕ Pedir moedas", changeLang:"🌐 Mudar idioma", onlineUsers:"📡 Online", globalChat:"💬 Chat Global", send:"Enviar", call:"📹", wall:"📸 Mural (enviar fotos/vídeos)", upload:"📤 Enviar", logout:"🚪 Sair", admin:"🔐 Admin", terms:"📜 Termos e condições\n1. Aceita as regras de convivência.\n2. O conteúdo expira em 12h.\n3. Moedas são ganhas com likes.\n4. Chamadas de vídeo consomem moedas.", usernamePlaceholder:"Nome de usuário" },
+        it: { welcomeTitle:"MILUCHAT", acceptTerms:"Accetto i termini", joinBtn:"Accedi", requestCoins:"➕ Richiedi monete", changeLang:"🌐 Cambia lingua", onlineUsers:"📡 Online", globalChat:"💬 Chat Globale", send:"Invia", call:"📹", wall:"📸 Bacheca (carica foto/video)", upload:"📤 Carica", logout:"🚪 Esci", admin:"🔐 Admin", terms:"📜 Termini e condizioni\n1. Accetti le regole di convivenza.\n2. I contenuti scadono dopo 12 ore.\n3. Le monete si guadagnano con i like.\n4. Le videochiamate consumano monete.", usernamePlaceholder:"Nome utente" },
+        zh: { welcomeTitle:"MILUCHAT", acceptTerms:"我接受条款", joinBtn:"登录", requestCoins:"➕ 请求硬币", changeLang:"🌐 更改语言", onlineUsers:"📡 在线", globalChat:"💬 全球聊天", send:"发送", call:"📹", wall:"📸 墙 (上传照片/视频)", upload:"📤 上传", logout:"🚪 退出", admin:"🔐 管理员", terms:"📜 条款和条件\n1. 您接受共存规则。\n2. 上传内容12小时后过期。\n3. 硬币通过点赞获得。\n4. 视频通话消耗硬币。", usernamePlaceholder:"用户名" },
+        ja: { welcomeTitle:"MILUCHAT", acceptTerms:"利用規約に同意する", joinBtn:"ログイン", requestCoins:"➕ コインをリクエスト", changeLang:"🌐 言語変更", onlineUsers:"📡 オンライン", globalChat:"💬 グローバルチャット", send:"送信", call:"📹", wall:"📸 ウォール (写真/動画をアップロード)", upload:"📤 アップロード", logout:"🚪 ログアウト", admin:"🔐 管理者", terms:"📜 利用規約\n1. 共存ルールに同意します。\n2. アップロードされたコンテンツは12時間で期限切れになります。\n3. いいね！でコインを獲得できます。\n4. ビデオ通話にはコインが必要です。", usernamePlaceholder:"ユーザー名" }
     };
     
     let userLanguage = 'es';
     let currentUsername = null;
-    let currentGender = null;
     let currentRoom = "global";
     let autoScroll = true;
     let floatingWindows = new Map();
@@ -628,9 +390,8 @@
     let isAdmin = false;
     let peerConnection = null;
     let localStream = null;
+    let currentCall = null;
     let callEnded = false;
-    let isInCall = false;
-    let callTimerInterval = null;
     const translationCache = new Map();
     
     // Audio recording
@@ -640,59 +401,25 @@
     
     const socket = io();
     
-    // Selección de género
-    let selectedGender = null;
-    const genderOptions = document.querySelectorAll('.gender-option');
-    genderOptions.forEach(option => {
-        option.onclick = () => {
-            genderOptions.forEach(opt => opt.classList.remove('selected'));
-            option.classList.add('selected');
-            selectedGender = option.dataset.gender;
-            const errorMsg = document.getElementById('errorMsg');
-            if(errorMsg && errorMsg.innerText.includes('Selecciona')) {
-                errorMsg.innerText = '';
-            }
-        };
-    });
-    
-    // Checkbox verde y validación
-    const acceptTerms = document.getElementById('acceptTerms');
-    const acceptTermsLabel = document.getElementById('acceptTermsLabel');
-    const joinBtnEl = document.getElementById('joinBtn');
-    const errorMsgDiv = document.getElementById('errorMsg');
-    
-    if(acceptTerms) {
-        acceptTerms.onchange = () => {
-            if(acceptTerms.checked) {
-                acceptTermsLabel.classList.add('checked');
-                if(joinBtnEl) joinBtnEl.disabled = false;
-                if(errorMsgDiv && errorMsgDiv.innerText === '❌ Debes aceptar los términos y condiciones') {
-                    errorMsgDiv.innerText = '';
-                }
-            } else {
-                acceptTermsLabel.classList.remove('checked');
-                if(joinBtnEl) joinBtnEl.disabled = true;
-            }
-        };
-    }
-    
     function applyUILanguage(lang) {
         const t = translations[lang] || translations.es;
         const welcomeTitle = document.getElementById('welcomeTitle');
-        const acceptTermsSpan = document.querySelector('#acceptTermsLabel span');
-        const joinBtnElement = document.getElementById('joinBtn');
-        const sendBtnElement = document.getElementById('sendBtn');
-        const callGlobalBtnElement = document.getElementById('callGlobalBtn');
-        const uploadMediaBtnElement = document.getElementById('uploadMediaBtn');
-        const usernameInputElement = document.getElementById('usernameInput');
+        const acceptTermsLabel = document.getElementById('acceptTermsLabel');
+        const joinBtnEl = document.getElementById('joinBtn');
+        const sendBtnEl = document.getElementById('sendBtn');
+        const callGlobalBtnEl = document.getElementById('callGlobalBtn');
+        const uploadMediaBtnEl = document.getElementById('uploadMediaBtn');
+        const usernameInputEl = document.getElementById('usernameInput');
+        const termsBoxEl = document.getElementById('termsBox');
         
         if(welcomeTitle) welcomeTitle.innerText = t.welcomeTitle;
-        if(acceptTermsSpan) acceptTermsSpan.innerText = t.acceptTerms;
-        if(joinBtnElement) joinBtnElement.innerText = t.joinBtn;
-        if(sendBtnElement) sendBtnElement.innerText = t.send;
-        if(callGlobalBtnElement) callGlobalBtnElement.innerText = t.call;
-        if(uploadMediaBtnElement) uploadMediaBtnElement.innerText = t.upload;
-        if(usernameInputElement) usernameInputElement.placeholder = t.usernamePlaceholder;
+        if(acceptTermsLabel) acceptTermsLabel.innerText = t.acceptTerms;
+        if(joinBtnEl) joinBtnEl.innerText = t.joinBtn;
+        if(sendBtnEl) sendBtnEl.innerText = t.send;
+        if(callGlobalBtnEl) callGlobalBtnEl.innerText = t.call;
+        if(uploadMediaBtnEl) uploadMediaBtnEl.innerText = t.upload;
+        if(usernameInputEl) usernameInputEl.placeholder = t.usernamePlaceholder;
+        if(termsBoxEl) termsBoxEl.innerHTML = `<strong>${t.terms.split('\n')[0]}</strong><br>${t.terms.split('\n').slice(1).join('<br>')}`;
         
         document.querySelectorAll('#requestCoinsBtn, #requestCoinsBtn2').forEach(btn => { if(btn) btn.innerText = t.requestCoins; });
         document.querySelectorAll('#changeLangBtn, #changeLangBtn2').forEach(btn => { if(btn) btn.innerText = t.changeLang; });
@@ -702,76 +429,36 @@
         document.querySelectorAll('#adminLoginBtn, #adminLoginBtn2, #adminLoginBtnMobile').forEach(btn => { if(btn) btn.innerText = t.admin; });
     }
     
-    function getGenderIcon(gender) {
-        if(gender === 'male') return '👨';
-        if(gender === 'female') return '👩';
-        return '';
-    }
-    
-    function getGenderBadge(gender) {
-        if(gender === 'male') return '<span class="gender-badge male">M</span>';
-        if(gender === 'female') return '<span class="gender-badge female">F</span>';
-        return '';
-    }
-    
-    function updateMyGenderBadge(gender) {
-        const badges = ['myGenderBadge', 'myGenderBadge2', 'myGenderBadgePC'];
-        badges.forEach(id => {
-            const el = document.getElementById(id);
-            if(el) {
-                if(gender === 'male') {
-                    el.textContent = 'M';
-                    el.className = 'gender-badge male';
-                } else if(gender === 'female') {
-                    el.textContent = 'F';
-                    el.className = 'gender-badge female';
-                }
-            }
-        });
-    }
-    
-    // FUNCIÓN DE TRADUCCIÓN MEJORADA - CORREGIDA
     async function translateText(text, targetLang, sourceLang = 'es') {
-        if (!text || !targetLang) return text;
-        if (targetLang === sourceLang) return text;
+        if (!text || targetLang === sourceLang) return text;
+        const cacheKey = text + '|' + sourceLang + '|' + targetLang;
+        if (translationCache.has(cacheKey)) return translationCache.get(cacheKey);
         
-        const cacheKey = `${text}|${sourceLang}|${targetLang}`;
-        if (translationCache.has(cacheKey)) {
-            return translationCache.get(cacheKey);
-        }
-        
-        try {
-            const pair = `${sourceLang}|${targetLang}`;
-            const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${pair}&de=admin@miluchat.com`;
-            
-            const response = await fetch(url);
-            const data = await response.json();
-            
-            let translatedText = data.responseData.translatedText;
-            
-            if (translatedText && translatedText !== text) {
-                // Limpiar el texto traducido
-                translatedText = translatedText.replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, '&');
-                translationCache.set(cacheKey, translatedText);
-                return translatedText;
+        const maxRetries = 2;
+        for (let attempt = 0; attempt < maxRetries; attempt++) {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+                const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`;
+                const res = await fetch(url, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                const data = await res.json();
+                let translated = data.responseData.translatedText || text;
+                translated = translated.replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, '&');
+                // Validar que realmente se tradujo (no devuelva el mismo texto)
+                if (translated.trim().toLowerCase() !== text.trim().toLowerCase() && translated.length > 0) {
+                    translationCache.set(cacheKey, translated);
+                    return translated;
+                }
+                // si es igual, esperar un poco y reintentar
+                if (attempt < maxRetries - 1) await new Promise(r => setTimeout(r, 500));
+            } catch(e) { 
+                console.warn(`Error traducción (intento ${attempt+1}):`, e);
+                if (attempt === maxRetries - 1) return text;
+                await new Promise(r => setTimeout(r, 500));
             }
-            
-            return text;
-        } catch (error) {
-            console.error('Error en traducción:', error);
-            return text;
         }
-    }
-    
-    // Función para obtener el nombre del idioma
-    function getLanguageFlag(langCode) {
-        const flags = {
-            'es': '🇪🇸', 'en': '🇺🇸', 'fr': '🇫🇷', 'de': '🇩🇪', 'pt': '🇵🇹', 'it': '🇮🇹',
-            'zh': '🇨🇳', 'ja': '🇯🇵', 'ar': '🇸🇦', 'ru': '🇷🇺', 'ko': '🇰🇷', 'hi': '🇮🇳',
-            'nl': '🇳🇱', 'sv': '🇸🇪', 'pl': '🇵🇱', 'tr': '🇹🇷', 'el': '🇬🇷', 'he': '🇮🇱',
-            'th': '🇹🇭', 'vi': '🇻🇳'
-        };
-        return flags[langCode] || '🌐';
+        return text;
     }
     
     function playSound() {
@@ -862,11 +549,7 @@
                 </div>
             </div>
             <div class="message-info">
-                <div class="message-username">
-                    <span>${escapeHtml(data.username)}</span>
-                    ${getGenderBadge(data.gender)}
-                    <span class="translation-badge">${getLanguageFlag(data.originalLang)}</span>
-                </div>
+                <span>${escapeHtml(data.username)}</span>
                 <span>${new Date(data.timestamp).toLocaleTimeString()}</span>
                 ${isOwn ? `<button class="delete-msg" data-id="${data.id}">🗑️</button>` : ''}
             </div>
@@ -893,6 +576,9 @@
     const usernameInput = document.getElementById('usernameInput');
     const languageSelect = document.getElementById('languageSelect');
     const countrySelect = document.getElementById('countrySelect');
+    const acceptTermsCheck = document.getElementById('acceptTerms');
+    const joinBtn = document.getElementById('joinBtn');
+    const errorMsg = document.getElementById('errorMsg');
     const messagesContainer = document.getElementById('messagesContainer');
     const messageInput = document.getElementById('messageInput');
     const sendBtn = document.getElementById('sendBtn');
@@ -941,48 +627,31 @@
     }
     if(mobileOverlay) mobileOverlay.onclick = closeMenus;
     
-    // FUNCIÓN PRINCIPAL PARA AGREGAR MENSAJE CON TRADUCCIÓN AUTOMÁTICA - CORREGIDA
+    if(acceptTermsCheck) {
+        acceptTermsCheck.onchange = () => { if(joinBtn) joinBtn.disabled = !acceptTermsCheck.checked; };
+    }
+    
     async function addMessageToDOM(data, isOwn) {
         const div = document.createElement('div');
         div.className = `message ${isOwn ? 'own' : ''}`;
-        
         let displayText = data.text;
-        const messageOriginalLang = data.originalLang || 'es';
-        
-        // TRADUCCIÓN AUTOMÁTICA: Si NO es mi mensaje Y el idioma del mensaje es diferente al mío
-        if (!isOwn && userLanguage !== messageOriginalLang) {
-            try {
-                console.log(`Traduciendo: "${data.text}" de ${messageOriginalLang} a ${userLanguage}`);
-                displayText = await translateText(data.text, userLanguage, messageOriginalLang);
-                console.log(`Traducción: "${displayText}"`);
-            } catch(e) {
-                console.error('Error en traducción automática:', e);
-                displayText = data.text;
-            }
+        if (!isOwn && userLanguage !== (data.originalLang || 'es')) {
+            displayText = await translateText(data.text, userLanguage, data.originalLang || 'es');
         }
-        
         div.innerHTML = `
             <div class="message-bubble">${escapeHtml(displayText)}</div>
             <div class="message-info">
-                <div class="message-username">
-                    <span>${escapeHtml(data.username)}</span>
-                    ${getGenderBadge(data.gender)}
-                    ${!isOwn && userLanguage !== messageOriginalLang ? `<span class="translation-badge" title="Traducido de ${messageOriginalLang}">🌐</span>` : ''}
-                    <span class="translation-badge">${getLanguageFlag(messageOriginalLang)}</span>
-                </div>
+                <span>${escapeHtml(data.username)}</span>
                 <span>${new Date(data.timestamp).toLocaleTimeString()}</span>
                 ${isOwn ? `<button class="delete-msg" data-id="${data.id}">🗑️</button>` : ''}
             </div>
         `;
-        
         if(messagesContainer) {
             messagesContainer.appendChild(div);
             if (autoScroll) messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
-        
         playSound();
         if (!isOwn && document.hidden) showNotification(data.username, displayText);
-        
         const delBtn = div.querySelector('.delete-msg');
         if (delBtn) delBtn.onclick = () => { if(confirm('¿Eliminar mensaje?')) socket.emit('delete message', { messageId: data.id }); };
     }
@@ -1006,7 +675,7 @@
             div.className = 'media-post';
             const mediaHtml = post.type === 'image' ? `<img src="${post.content}" loading="lazy">` : `<video controls src="${post.content}" preload="metadata"></video>`;
             div.innerHTML = `
-                <div><strong>${escapeHtml(post.username)}</strong> ${getGenderBadge(post.gender)} <small>${new Date(post.timestamp).toLocaleString()}</small></div>
+                <div><strong>${escapeHtml(post.username)}</strong> <small>${new Date(post.timestamp).toLocaleString()}</small></div>
                 ${mediaHtml}
                 <div>
                     <button class="like-btn" data-id="${post.id}">❤️ ${post.likes || 0}</button>
@@ -1029,10 +698,7 @@
                 if (user.username !== currentUsername) {
                     const div = document.createElement('div');
                     div.className = 'user-online';
-                    div.innerHTML = `
-                        <span class="status-dot"></span>
-                        <span>${escapeHtml(user.username)} ${getGenderIcon(user.gender)} (${user.country}) ${getLanguageFlag(user.language)}</span>
-                    `;
+                    div.innerHTML = `<span class="status-dot"></span><span>${escapeHtml(user.username)} (${user.country})</span>`;
                     div.onclick = () => openPrivateChat(user.username);
                     container.appendChild(div);
                 }
@@ -1056,13 +722,17 @@
         });
     }
     
-    // WebRTC Videollamada
+    // WebRTC Videollamada CORREGIDA
     const configuration = { 
         iceServers: [
             { urls: 'stun:stun.l.google.com:19302' },
             { urls: 'stun:stun1.l.google.com:19302' }
         ] 
     };
+    
+    let callTimerInterval = null;
+    let callStartTime = null;
+    let isInCall = false;
     
     async function startCall(targetUser, durationMinutes) {
         if(isInCall) {
@@ -1208,6 +878,7 @@
         }
     }
     
+    // Mostrar notificación de llamada entrante
     function showIncomingCallNotification(from, durationMinutes, acceptCallback, rejectCallback) {
         const notification = document.createElement('div');
         notification.className = 'incoming-call-notification';
@@ -1236,7 +907,7 @@
         }, 30000);
     }
     
-    // Socket eventos
+    // Socket eventos para videollamada
     socket.on('call-offer', async ({ offer, from, durationMinutes }) => {
         if(isInCall) {
             socket.emit('call-reject', { from });
@@ -1309,11 +980,12 @@
     
     socket.on('call-ended', () => {
         if(!callEnded) {
+            addSystemMessage(`📹 La videollamada ha terminado`, false);
             endCall(false);
         }
     });
     
-    socket.on('audio message', async (data) => {
+    socket.on('audio message', (data) => {
         if (currentRoom === 'global') {
             addAudioMessageToDOM(data, data.username === currentUsername);
         }
@@ -1333,7 +1005,7 @@
             return;
         }
         
-        socket.emit('start private chat', { targetUsername: targetUser }, async (resp) => {
+        socket.emit('start private chat', { targetUsername: targetUser }, (resp) => {
             if (!resp.success) { alert(resp.error); return; }
             const roomName = resp.roomName;
             const floatingDiv = document.createElement('div');
@@ -1479,24 +1151,10 @@
                     const msgDiv = document.createElement('div');
                     msgDiv.className = `message ${data.username === currentUsername ? 'own' : ''}`;
                     let displayText = data.text;
-                    const msgOriginalLang = data.originalLang || 'es';
-                    
-                    if (data.username !== currentUsername && userLanguage !== msgOriginalLang) {
-                        displayText = await translateText(data.text, userLanguage, msgOriginalLang);
+                    if (data.username !== currentUsername && userLanguage !== (data.originalLang || 'es')) {
+                        displayText = await translateText(data.text, userLanguage, data.originalLang || 'es');
                     }
-                    
-                    msgDiv.innerHTML = `
-                        <div class="message-bubble">${escapeHtml(displayText)}</div>
-                        <div class="message-info">
-                            <div class="message-username">
-                                <span>${escapeHtml(data.username)}</span>
-                                ${getGenderBadge(data.gender)}
-                                ${data.username !== currentUsername && userLanguage !== msgOriginalLang ? `<span class="translation-badge" title="Traducido">🌐</span>` : ''}
-                                <span class="translation-badge">${getLanguageFlag(msgOriginalLang)}</span>
-                            </div>
-                            <span>${new Date(data.timestamp).toLocaleTimeString()}</span>
-                        </div>
-                    `;
+                    msgDiv.innerHTML = `<div class="message-bubble">${escapeHtml(displayText)}</div><div class="message-info"><span>${escapeHtml(data.username)}</span><span>${new Date(data.timestamp).toLocaleTimeString()}</span></div>`;
                     if(messagesFloat) {
                         messagesFloat.appendChild(msgDiv);
                         messagesFloat.scrollTop = messagesFloat.scrollHeight;
@@ -1517,11 +1175,7 @@
                             </div>
                         </div>
                         <div class="message-info">
-                            <div class="message-username">
-                                <span>${escapeHtml(data.username)}</span>
-                                ${getGenderBadge(data.gender)}
-                                <span class="translation-badge">${getLanguageFlag(data.originalLang)}</span>
-                            </div>
+                            <span>${escapeHtml(data.username)}</span>
                             <span>${new Date(data.timestamp).toLocaleTimeString()}</span>
                         </div>
                     `;
@@ -1558,19 +1212,11 @@
     function escapeHtml(str) { return String(str).replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
     
     // Socket events
-    socket.on('global history', async (msgs) => {
-        for (const m of msgs) {
-            if(m.text) addMessageToDOM(m, m.username === currentUsername);
-            else if(m.audioData) addAudioMessageToDOM(m, m.username === currentUsername);
-        }
-    });
-    
-    socket.on('chat message', (data) => { 
-        if (currentRoom === 'global') {
-            addMessageToDOM(data, data.username === currentUsername);
-        }
-    });
-    
+    socket.on('global history', (msgs) => msgs.forEach(m => {
+        if(m.text) addMessageToDOM(m, m.username === currentUsername);
+        else if(m.audioData) addAudioMessageToDOM(m, m.username === currentUsername);
+    }));
+    socket.on('chat message', (data) => { if (currentRoom === 'global') addMessageToDOM(data, data.username === currentUsername); });
     socket.on('system message', (data) => addSystemMessage(data.text, true));
     socket.on('user list', updateUsersList);
     socket.on('media posts update', (posts) => { mediaPosts = posts; renderMediaWall(); });
@@ -1618,31 +1264,35 @@
         }
     });
     
-    // Cambiar idioma - RECARGAR MENSAJES TRADUCIDOS
+    // Cambiar idioma
     const changeLangBtns = document.querySelectorAll('#changeLangBtn, #changeLangBtn2');
     changeLangBtns.forEach(btn => {
         if(btn) {
             btn.onclick = () => {
-                const langOptions = 'es, en, fr, de, pt, it, zh, ja, ar, ru, ko, hi, nl, sv, pl, tr, el, he, th, vi';
-                const newLang = prompt(`🌐 Cambiar idioma a (${langOptions}):`, userLanguage);
+                const langOptions = Object.keys(translations).join(', ');
+                const newLang = prompt(`Código de idioma (${langOptions}):`, userLanguage);
                 if (newLang && translations[newLang]) {
                     userLanguage = newLang;
                     applyUILanguage(newLang);
-                    addSystemMessage(`✨ Idioma cambiado a ${newLang}. Los mensajes se traducirán automáticamente.`, true);
-                    // Recargar mensajes para aplicar nueva traducción
+                    addSystemMessage(`Idioma cambiado a ${newLang}. Los mensajes se traducirán automáticamente.`, true);
                     if(messagesContainer) messagesContainer.innerHTML = '';
-                    socket.emit('global history', (msgs) => {
-                        msgs.forEach(m => {
-                            if(m.text) addMessageToDOM(m, m.username === currentUsername);
-                            else if(m.audioData) addAudioMessageToDOM(m, m.username === currentUsername);
-                        });
-                    });
+                    socket.emit('global history', (msgs) => msgs.forEach(m => addMessageToDOM(m, m.username === currentUsername)));
                 } else if(newLang) {
-                    alert(`❌ Idioma no soportado. Usa: ${langOptions}`);
+                    alert('Idioma no soportado. Usa: es, en, fr, de, pt, it, zh, ja');
                 }
             };
         }
     });
+    
+    // Evento para cambiar idioma en la pantalla de bienvenida antes de ingresar
+    if(languageSelect) {
+        languageSelect.addEventListener('change', () => {
+            const newLang = languageSelect.value;
+            if(translations[newLang]) {
+                applyUILanguage(newLang);
+            }
+        });
+    }
     
     if(sendBtn) sendBtn.onclick = () => sendTextMessage();
     if(messageInput) {
@@ -1686,18 +1336,18 @@
         container.style.display = 'block';
         container.innerHTML = `
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                <h4>👑 Panel Admin</h4>
+                <h4>Panel Admin</h4>
                 <button class="closeAdminBtn" style="background:var(--danger); border:none; color:white; padding:2px 10px; border-radius:8px; cursor:pointer;">✖</button>
             </div>
             <div id="adminRequestsList_${containerId}"></div>
-            <h5 style="margin-top:10px;">💰 Dar monedas</h5>
+            <h5 style="margin-top:10px;">Dar monedas</h5>
             <input type="text" id="adminGiveUser_${containerId}" placeholder="Nombre usuario" style="width:100%; padding:8px; margin:5px 0; border-radius:8px; border:none;">
             <input type="number" id="adminGiveAmount_${containerId}" min="1" max="12" placeholder="Cantidad" style="width:100%; padding:8px; margin:5px 0; border-radius:8px; border:none;">
-            <button id="adminGiveCoinsBtn_${containerId}" style="background:var(--success); border:none; padding:8px; border-radius:8px; color:white; cursor:pointer; width:100%; margin:5px 0;">✅ Dar monedas</button>
-            <h5 style="margin-top:10px;">🚫 Bloquear/Desbloquear</h5>
+            <button id="adminGiveCoinsBtn_${containerId}" style="background:var(--success); border:none; padding:8px; border-radius:8px; color:white; cursor:pointer; width:100%; margin:5px 0;">Dar monedas</button>
+            <h5 style="margin-top:10px;">Bloquear/Desbloquear</h5>
             <input type="text" id="adminBlockUser_${containerId}" placeholder="Nombre usuario" style="width:100%; padding:8px; margin:5px 0; border-radius:8px; border:none;">
-            <button id="adminBlockBtn_${containerId}" style="background:var(--danger); border:none; padding:8px; border-radius:8px; color:white; cursor:pointer; width:48%; margin:5px 1%;">🔨 Bloquear</button>
-            <button id="adminUnblockBtn_${containerId}" style="background:var(--accent); border:none; padding:8px; border-radius:8px; color:white; cursor:pointer; width:48%; margin:5px 1%;">🔓 Desbloquear</button>
+            <button id="adminBlockBtn_${containerId}" style="background:var(--danger); border:none; padding:8px; border-radius:8px; color:white; cursor:pointer; width:48%; margin:5px 1%;">Bloquear</button>
+            <button id="adminUnblockBtn_${containerId}" style="background:var(--accent); border:none; padding:8px; border-radius:8px; color:white; cursor:pointer; width:48%; margin:5px 1%;">Desbloquear</button>
         `;
         
         const closeBtn = container.querySelector('.closeAdminBtn');
@@ -1762,14 +1412,14 @@
             if(!listContainer) return;
             listContainer.innerHTML = '';
             if (!requests || requests.length === 0) { 
-                listContainer.innerHTML = '<div style="color:#888; text-align:center;">📭 No hay solicitudes pendientes</div>'; 
+                listContainer.innerHTML = '<div style="color:#888;">No hay solicitudes pendientes</div>'; 
                 return; 
             }
             requests.forEach((req, idx) => {
                 const div = document.createElement('div');
                 div.style.cssText = 'background:var(--bg-chat); padding:8px; margin:5px 0; border-radius:8px;';
                 div.innerHTML = `
-                    <strong>👤 ${escapeHtml(req.from)}</strong> pide ${req.amount} monedas
+                    <strong>${escapeHtml(req.from)}</strong> pide ${req.amount} monedas
                     <div style="margin-top:5px;">
                         <button class="admin-give-req" data-idx="${idx}" style="background:var(--success); border:none; padding:4px 12px; border-radius:6px; color:white; cursor:pointer; margin-right:5px;">✅ Dar</button>
                         <button class="admin-deny-req" data-idx="${idx}" style="background:var(--danger); border:none; padding:4px 12px; border-radius:6px; color:white; cursor:pointer;">❌ Denegar</button>
@@ -1825,7 +1475,7 @@
                                 });
                             });
                             
-                            addSystemMessage('👑 Modo administrador activado', true);
+                            addSystemMessage('🔐 Modo administrador activado', true);
                         } else {
                             alert('❌ Contraseña incorrecta');
                         }
@@ -1835,25 +1485,24 @@
         }
     });
     
-    function joinChat(username, lang, country, gender) {
-        socket.emit('set username', { username, language: lang, country, gender }, (success, data) => {
+    function joinChat(username, lang, country) {
+        socket.emit('set username', { username, language: lang, country }, (success, data) => {
             if (success) {
                 currentUsername = username;
                 userLanguage = lang;
                 userCountry = country;
-                currentGender = gender;
+                // Aplicar el idioma seleccionado a toda la interfaz inmediatamente
+                applyUILanguage(lang);
                 localStorage.setItem('miluchat_user', username);
                 localStorage.setItem('miluchat_lang', lang);
                 localStorage.setItem('miluchat_country', country);
-                localStorage.setItem('miluchat_gender', gender);
                 if(welcomeDiv) welcomeDiv.style.display = 'none';
                 if(chatDiv) chatDiv.style.display = 'flex';
                 updateCoins(data.coins);
                 updateMyName(username);
-                updateMyGenderBadge(gender);
-                addSystemMessage(`✨ Bienvenido ${username} ${gender === 'male' ? '👨' : '👩'} (${country}). Tienes ${data.coins} monedas.`, true);
-            } else if(errorMsgDiv) {
-                errorMsgDiv.innerText = data;
+                addSystemMessage(`✨ Bienvenido ${username}. Tienes ${data.coins} monedas.`, true);
+            } else if(errorMsg) {
+                errorMsg.innerText = data;
             }
         });
     }
@@ -1865,34 +1514,18 @@
     if (savedUser) {
         userLanguage = localStorage.getItem('miluchat_lang') || 'es';
         userCountry = localStorage.getItem('miluchat_country') || 'COL';
-        currentGender = localStorage.getItem('miluchat_gender') || 'male';
         if(languageSelect) languageSelect.value = userLanguage;
         if(countrySelect) countrySelect.value = userCountry;
-        joinChat(savedUser, userLanguage, userCountry, currentGender);
+        joinChat(savedUser, userLanguage, userCountry);
     }
-    
-    const joinButton = document.getElementById('joinBtn');
-    if(joinButton) {
-        joinButton.onclick = () => {
+    if(joinBtn) {
+        joinBtn.onclick = () => {
             const name = usernameInput ? usernameInput.value.trim() : '';
             const lang = languageSelect ? languageSelect.value : 'es';
             const country = countrySelect ? countrySelect.value : 'COL';
-            const gender = selectedGender;
-            
-            if(!name) {
-                errorMsgDiv.innerText = '❌ Ingresa un nombre de usuario';
-                return;
-            }
-            if(!gender) {
-                errorMsgDiv.innerText = '❌ Selecciona tu género (Hombre o Mujer)';
-                return;
-            }
-            if(!acceptTerms || !acceptTerms.checked) {
-                errorMsgDiv.innerText = '❌ Debes aceptar los términos y condiciones';
-                return;
-            }
-            
-            joinChat(name, lang, country, gender);
+            if (name && acceptTermsCheck && acceptTermsCheck.checked) joinChat(name, lang, country);
+            else if (acceptTermsCheck && !acceptTermsCheck.checked && errorMsg) errorMsg.innerText = 'Acepta los términos';
+            else if (!name && errorMsg) errorMsg.innerText = 'Ingresa un nombre';
         };
     }
 </script>
